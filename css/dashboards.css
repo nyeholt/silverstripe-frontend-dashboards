@@ -1,0 +1,62 @@
+.dashboard {
+	min-height: 200px;
+}
+
+.dashlet {
+	margin-bottom: 10px;
+	border: 1px solid #CCC;
+	background: #FFF;
+}
+
+.dashlet-title {
+	height: 34px;
+	padding: 0 10px;
+	background: #F4F4F4;
+	border-bottom: 1px solid #CCC;
+	overflow: hidden;
+	cursor: move;
+}
+
+.dashlet-collapsed .dashlet-title {
+	border-bottom: none;
+}
+
+.dashlet-title h3 {
+	font-size: 15px;
+	line-height: 34px;
+	height: 34px;
+	overflow: hidden;
+	margin: 0;
+}
+
+.dashlet-title-actions {
+	float: right;
+	margin-top: 9px;
+}
+
+.dashlet-title-actions a {
+	float: left;
+	cursor: pointer;
+	margin-left: 2px;
+}
+
+.dashlet-title-actions a:hover {
+	background-color: #BBB;
+}
+
+.dashlet-title-actions a:active {
+	background-color: #CCC;
+}
+
+.dashlet-placeholder {
+	height: 34px;
+	margin-bottom: 10px;
+}
+
+.dashlet-dialog .Actions {
+	display: none;
+}
+
+.ui-dialog .dashlet-dialog-loading {
+	background: url(../images/spinner.gif) no-repeat center center;
+}
