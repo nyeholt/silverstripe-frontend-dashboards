@@ -2,6 +2,7 @@
 
 
 <input id="DashboardID" value="$Dashboard.ID" type="hidden" />
+<input id="DashboardUrl" value="$Link" type="hidden"/>
 
 $Dashboard
 
@@ -9,7 +10,7 @@ $Dashboard
 	<div class="sliderContent">
 		<div id="DashboardForms">
 		$DashboardForm
-		$WidgetForm
+		$AddDashletForm
 		</div>
 	</div>
 	<div class="openCloseWrap">
