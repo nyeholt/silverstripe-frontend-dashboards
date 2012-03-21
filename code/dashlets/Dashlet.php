@@ -44,6 +44,19 @@ class Dashlet extends Widget {
 }
 
 class Dashlet_Controller extends Widget_Controller {
+	protected $parentDashboardPage = null;
+	
+	/**
+	 * Store the page we were attached to
+	 * 
+	 * @param type $widget
+	 * @param type $parent 
+	 */
+	public function __construct($widget = null, $parent = null) {
+		parent::__construct($widget);
+		$this->parentDashboardPage = $parent;
+	}
+	
 	/**
 	 * Overloaded from {@link Widget->Content()}
 	 * to allow for controller/form linking.
@@ -60,10 +73,12 @@ class Dashlet_Controller extends Widget_Controller {
 	 */
 	public function Link($action = null) {
 		$curr = Controller::curr();
+		if ($this->parentDashboardPage) {
+			return Controller::join_links($this->parentDashboardPage->Link(), 'widget', ($this->widget ? $this->widget->ID : null), $action);
+		}
 		if ($curr != $this) {
-			return Controller::curr()->Link (
-				Controller::join_links('widget', ($this->widget ? $this->widget->ID : null), $action)
-			);
+			$pageLink = Controller::curr()->Link();
+			return Controller::join_links($pageLink, 'widget', ($this->widget ? $this->widget->ID : null), $action);
 		}
 		
 		return Controller::join_links('widget', ($this->widget ? $this->widget->ID : null), $action);

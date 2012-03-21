@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of DashboardController
- *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD http://silverstripe.org/BSD-license
  */
@@ -13,13 +11,14 @@ class DashboardController extends FrontendModelController {
 	public static $model_class = 'DashboardPage';
 	
 	static $url_handlers = array(
-		'widget/$ID/$Action'			=> 'handleDashlet',
-		'dashlet/$ID/$Action'			=> 'handleDashlet',	// what it should be
+		'widget/$ID'			=> 'handleDashlet',
+		'dashlet/$ID'			=> 'handleDashlet',	// what it should be
 		'board/$URLSegment'				=> 'handleBoard',
 	);
 
 	public static $allowed_actions = array(
 		'index',
+		'board',
 		'handleDashlet',
 		'handleBoard',
 		'adddashlet',
@@ -34,8 +33,8 @@ class DashboardController extends FrontendModelController {
 
 	private static $allowed_dashlets = array();
 	
-	public function __construct($dashboard=null) {
-		if ($dashboard) {
+	public function __construct($page=null, $dashboard=null) {
+		if ($dashboard && $dashboard instanceof DashboardPage) {
 			$this->currentDashboard = $dashboard;
 		} else {
 			Restrictable::set_enabled(false);
@@ -45,6 +44,10 @@ class DashboardController extends FrontendModelController {
 			}
 			Restrictable::set_enabled(true);
 		}
+		
+		if ($this->currentDashboard) {
+			$this->currentDashboard->setController($this);
+		}
 
 		if (!count(self::$allowed_dashlets)) {
 			$widgets = ClassInfo::subclassesFor('Dashlet');
@@ -52,7 +55,7 @@ class DashboardController extends FrontendModelController {
 			self::$allowed_dashlets = array_combine($widgets, $widgets);
 		}
 
-		parent::__construct();
+		parent::__construct($page);
 	}
 
 	/**
@@ -64,6 +67,10 @@ class DashboardController extends FrontendModelController {
 	
 	public function init() {
 		parent::init();
+		if (!Member::currentUserID()) {
+			Security::permissionFailure($this, "You must be logged in");
+			return;
+		}
 
 		// add the following to your own page init() to ensure requirements
 		// are met - but you're likely to have them anyway.
@@ -103,6 +110,13 @@ class DashboardController extends FrontendModelController {
 			$page = singleton('SecurityContext')->getMember()->createDashboard('main', true);
 		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
+	}
+	
+	/**
+	 * Handler for when the board action is triggered by a nested controller
+	 */
+	public function board() {
+		return $this->index();
 	}
 
 	protected function getDashboard($name='main') {
@@ -197,7 +211,8 @@ class DashboardController extends FrontendModelController {
 		$segment = $this->request->param('URLSegment');
 		$board = $this->getDashboard($segment);
 		if ($board) {
-			$controller = new DashboardController($board);
+			$this->request->allParams();
+			$controller = new DashboardController($this->dataRecord, $board);
 			return $controller;
 		}
 		return $this->httpError(404, "Board $segment does not exist");
@@ -233,8 +248,8 @@ class DashboardController extends FrontendModelController {
 			sprintf('No controller available for %s', $widget->class),
 			E_USER_ERROR
 		);
-
-		return new $controllerClass($widget);
+		
+		return new $controllerClass($widget, $this);
 	}
 	
 	/**
@@ -314,6 +329,7 @@ class DashboardController extends FrontendModelController {
 		if ($this->currentDashboard && $this->currentDashboard->URLSegment != 'main') {
 			return $this->currentDashboard->Link($action);
 		}
-		return Controller::join_links(Director::baseURL(), 'dashboard', $action);
+		
+		return $this->dataRecord->Link($action);
 	}
 }

@@ -26,6 +26,15 @@ class DashboardPage extends DataObject {
 	public static $extensions = array(
 		'Restrictable',
 	);
+	
+	private $controller;
+	
+	/**
+	 * @param type $controller 
+	 */
+	public function setController($controller) {
+		$this->controller = $controller;
+	}
 
 	public function getDashboard($index) {
 		$dashboards = $this->Dashboards();
@@ -66,6 +75,9 @@ class DashboardPage extends DataObject {
 	}
 
 	public function Link($action='') {
+		if ($this->controller) {
+			return Controller::join_links($this->controller->Link(), 'board', $this->URLSegment, $action);
+		}
 		return Controller::join_links(Director::baseURL(), 'dashboard', 'board', $this->URLSegment, $action);
 	}
 }
