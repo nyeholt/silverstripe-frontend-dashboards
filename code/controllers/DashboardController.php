@@ -67,7 +67,7 @@ class DashboardController extends FrontendModelController {
 	
 	public function init() {
 		parent::init();
-		if (!Member::currentUserID()) {
+		if (!Member::currentUserID() && !$this->redirectedTo()) {
 			Security::permissionFailure($this, "You must be logged in");
 			return;
 		}
@@ -96,6 +96,14 @@ class DashboardController extends FrontendModelController {
 			}
 		} else {
 			self::$allowed_dashlets = $dashlets;
+		}
+		
+		// prune any that have specific requirements
+		foreach (self::$allowed_dashlets as $cls => $title) {
+			$dummy = singleton($cls);
+			if (!$dummy->canCreate()) {
+				unset(self::$allowed_dashlets[$cls]);
+			}
 		}
 	}
 	
@@ -179,7 +187,8 @@ class DashboardController extends FrontendModelController {
 	public function AddDashletForm() {
 		$dashlets = array();
 
-		foreach(self::$allowed_dashlets as $class) {
+		$allowed = self::get_allowed_dashlets();
+		foreach($allowed as $class) {
 			$dashlets[$class] = $class::$title == 'Widget Title' ? $class : $class::$title;
 		}
 
@@ -195,11 +204,14 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public function doAddDashlet($data, $form) {
-		$classes = ClassInfo::subclassesFor('Widget');
+		$classes = self::get_allowed_dashlets();
 		$type    = $data['DashletClass'];
 
-		if(in_array($type, $classes)) {
+		if(isset($classes[$type])) {
 			$dashlet = new $type();
+			if (!$dashlet->canCreate()) {
+				throw new PermissionDeniedException('CreateChildren');
+			}
 			$dashlet->ParentID = $this->currentDashboard->getDashboard(0)->ID;
 			$dashlet->write();
 		}
@@ -269,7 +281,8 @@ class DashboardController extends FrontendModelController {
 		// there's some that we KNOW we don't want
 		
 		$actions = new FieldSet(
-			new FormAction('savedashlet', 'Save')
+			new FormAction('savedashlet', 'Save'),
+				new FormAction('deletedashlet', 'Delete')
 		);
 		
 		$form = new Form($this, 'EditDashletForm', $fields, $actions);
@@ -287,10 +300,10 @@ class DashboardController extends FrontendModelController {
 			return $this->loaddashlet();
 		}
 	}
-
-	public function deletedashlet() {
+	
+	public function deletedashlet($data, Form $form) {
 		$dashlet = $this->getRequestedDashlet();
-
+		
 		if ($dashlet->checkPerm('Delete')) {
 			$dashlet->delete();
 

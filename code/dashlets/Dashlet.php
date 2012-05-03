@@ -41,6 +41,32 @@ class Dashlet extends Widget {
 			return $parent;
 		}
 	}
+
+	/**
+	 * The permission needed for a user to be able to create and view this dashlet
+	 * to the site config object 
+	 */
+	protected function requiredPermission() {
+		return 'View';
+	}
+	
+	/**
+	 * Can this dashlet be created by the current user?
+	 * 
+	 * @param type $member
+	 * @return type 
+	 */
+	public function canCreate($member=null) {
+		
+		$config = SiteConfig::current_site_config();
+		
+		$required = $this->requiredPermission();
+		if ($config->checkPerm($required)) {
+			return true;
+		}
+		
+		return parent::canCreate($member);
+	}
 }
 
 class Dashlet_Controller extends Widget_Controller {

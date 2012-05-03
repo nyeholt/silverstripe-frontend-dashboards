@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Description of WiUser
- *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD http://silverstripe.org/BSD-license
  */
@@ -57,8 +55,11 @@ class DashboardUser extends DataObjectDecorator {
 				foreach ($dashlets as $type) {
 					if (class_exists($type)) {
 						$dashlet = new $type;
-						$dashlet->ParentID = $dashboard->getDashboard($dbid)->ID;
-						$dashlet->write();
+						$dashboard = $dashboard->getDashboard($dbid);
+						if ($dashboard && $dashlet->canCreate()) {
+							$dashlet->ParentID = $dashboard->ID;
+							$dashlet->write();
+						}
 					}
 				}
 			}
