@@ -9,11 +9,20 @@
  */
 class DashboardPage extends DataObject {
 
+	public static $layouts = array(
+		'1col'   => 'One Column',
+		'2colLW' => 'Two Columns - Left Wide',
+		'2colRW' => 'Two Columns - Right Wide',
+		'3col'   => 'Three Columns'
+	);
+
+	public static $default_layout = '2colLW';
+
 	public static $max_dashboards = 3;
 	public static $db = array(
-		'Title'					=> 'Varchar(128)',
-		'URLSegment'			=> 'Varchar(64)',
-		'ColumnLayout'			=> "Enum('1col,2colLW,2colRW,3col','2colRW')"
+		'Title'      => 'Varchar(128)',
+		'URLSegment' => 'Varchar(64)',
+		'Layout'     => 'Varchar(15)'
 	);
 	
 	public static $defaults = array(
@@ -26,9 +35,13 @@ class DashboardPage extends DataObject {
 	public static $extensions = array(
 		'Restrictable',
 	);
-	
+
 	private $controller;
-	
+
+	public function getController() {
+		return $this->controller;
+	}
+
 	/**
 	 * @param type $controller 
 	 */
@@ -38,8 +51,10 @@ class DashboardPage extends DataObject {
 
 	public function getDashboard($index) {
 		$dashboards = $this->Dashboards();
-		/* @var $dashboards ComponentSet */
+
 		$board = $dashboards->getIterator()->getOffset($index);
+		$board->parent = $this;
+
 		return $board;
 	}
 
@@ -59,7 +74,11 @@ class DashboardPage extends DataObject {
 	
 	public function getFrontEndFields($params = null) {
 		$fields = parent::getFrontEndFields($params);
-		
+
+		$fields->replaceField('Layout', new DropdownField(
+			'Layout', null, self::$layouts, null, null, true
+		));
+
 		$fields->removeByName('InheritPerms');
 		$fields->removeByName('OwnerID');
 		$fields->removeByName('PublicAccess');
@@ -68,10 +87,13 @@ class DashboardPage extends DataObject {
 	}
 
 	public function forTemplate() {
-		if (!$this->ColumnLayout) {
-			$this->ColumnLayout = '2colRW';
+		if($this->Layout) {
+			$layout = $this->Layout;
+		} else {
+			$layout = self::$default_layout;
 		}
-		return $this->renderWith('DashboardPage_' . $this->ColumnLayout);
+
+		return $this->renderWith("DashboardPage_$layout");
 	}
 
 	public function Link($action='') {

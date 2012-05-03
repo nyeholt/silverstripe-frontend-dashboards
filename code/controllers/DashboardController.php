@@ -119,7 +119,7 @@ class DashboardController extends FrontendModelController {
 		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
 	}
-	
+
 	/**
 	 * Handler for when the board action is triggered by a nested controller
 	 */
@@ -195,7 +195,7 @@ class DashboardController extends FrontendModelController {
 		asort($dashlets);
 
 		$fields = new FieldSet(
-			new DropdownField('DashletClass', 'Dashlet', $dashlets)
+			new DropdownField('DashletClass', 'Dashlet', $dashlets, null, null, 'Add dashlet...')
 		);
 
 		return new Form($this, 'AddDashletForm', $fields, new FieldSet(
@@ -223,8 +223,10 @@ class DashboardController extends FrontendModelController {
 		$segment = $this->request->param('URLSegment');
 		$board = $this->getDashboard($segment);
 		if ($board) {
+			// need this call to make sure the params are properly processed
 			$this->request->allParams();
-			$controller = new DashboardController($this->dataRecord, $board);
+			$cls = get_class($this);
+			$controller = new $cls($this->dataRecord, $board);
 			return $controller;
 		}
 		return $this->httpError(404, "Board $segment does not exist");
@@ -303,7 +305,7 @@ class DashboardController extends FrontendModelController {
 	
 	public function deletedashlet($data, Form $form) {
 		$dashlet = $this->getRequestedDashlet();
-		
+
 		if ($dashlet->checkPerm('Delete')) {
 			$dashlet->delete();
 
@@ -318,7 +320,7 @@ class DashboardController extends FrontendModelController {
 		$controller = $dashlet->class.'_Controller';
 		$renderObj = $dashlet;
 		if (class_exists($controller)) {
-			$renderObj = new $controller($dashlet);
+			$renderObj = new $controller($dashlet, $this);
 		}
 		
 		return $renderObj->renderWith('DashletLayout');
