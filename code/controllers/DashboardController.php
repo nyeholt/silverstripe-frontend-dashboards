@@ -97,26 +97,29 @@ class DashboardController extends FrontendModelController {
 		} else {
 			self::$allowed_dashlets = $dashlets;
 		}
-		
-		// prune any that have specific requirements
-		foreach (self::$allowed_dashlets as $cls => $title) {
-			$dummy = singleton($cls);
-			if (!$dummy->canCreate()) {
-				unset(self::$allowed_dashlets[$cls]);
-			}
-		}
+		self::$pruned_dashlets = false;
 	}
 	
+	private static $pruned_dashlets = false;
+	
 	public static function get_allowed_dashlets() {
+		if (!self::$pruned_dashlets) {
+			// prune any that have specific requirements
+			foreach (self::$allowed_dashlets as $cls => $title) {
+				$dummy = singleton($cls);
+				if (!$dummy->canCreate()) {
+					unset(self::$allowed_dashlets[$cls]);
+				}
+			}
+			self::$pruned_dashlets = true;
+		}
+		
 		return self::$allowed_dashlets;
 	}
 	
 	
 	public function index() {
 		$page = $this->currentDashboard ? $this->currentDashboard : $this->getDashboard();
-		if (!$page || !$page->exists()) {
-			$page = singleton('SecurityContext')->getMember()->createDashboard('main', true);
-		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
 	}
 
@@ -129,6 +132,9 @@ class DashboardController extends FrontendModelController {
 
 	protected function getDashboard($name='main') {
 		$page = singleton('SecurityContext')->getMember()->getNamedDashboard($name);
+		if ((!$page || !$page->exists()) && $name == 'main') {
+			$page = singleton('SecurityContext')->getMember()->createDashboard($name, true);
+		}
 		return $page;
 	}
 
@@ -188,7 +194,10 @@ class DashboardController extends FrontendModelController {
 		$dashlets = array();
 
 		$allowed = self::get_allowed_dashlets();
-		foreach($allowed as $class) {
+		foreach($allowed as $class => $title) {
+			if (is_int($class)) {
+				$class = $title;
+			}
 			$dashlets[$class] = $class::$title == 'Widget Title' ? $class : $class::$title;
 		}
 

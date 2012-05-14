@@ -57,14 +57,12 @@ class Dashlet extends Widget {
 	 * @return type 
 	 */
 	public function canCreate($member=null) {
-		
 		$config = SiteConfig::current_site_config();
-		
 		$required = $this->requiredPermission();
 		if ($config->checkPerm($required)) {
 			return true;
 		}
-		
+
 		return parent::canCreate($member);
 	}
 }
