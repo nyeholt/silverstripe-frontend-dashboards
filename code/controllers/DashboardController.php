@@ -159,11 +159,11 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public function DashboardForm() {
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new TextField('Title', _t('Dashboard.TITLE', 'Title'))
 		);
 
-		$actions = new FieldSet(new FormAction('adddashboard', _t('Dashboard.ADD_NEW', 'Add Dashboard')));
+		$actions = new FieldList(new FormAction('adddashboard', _t('Dashboard.ADD_NEW', 'Add Dashboard')));
 		$form = new Form($this, 'DashboardForm', $fields, $actions);
 		return $form;
 	}
@@ -194,11 +194,11 @@ class DashboardController extends FrontendModelController {
 
 		asort($dashlets);
 
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new DropdownField('DashletClass', 'Dashlet', $dashlets, null, null, 'Add dashlet...')
 		);
 
-		return new Form($this, 'AddDashletForm', $fields, new FieldSet(
+		return new Form($this, 'AddDashletForm', $fields, new FieldList(
 			new FormAction('doAddDashlet', _t('Dashboards.ADD_DASHLET', 'Add Dashlet'))
 		));
 	}
@@ -279,10 +279,10 @@ class DashboardController extends FrontendModelController {
 		$fields = $dashlet->getDashletFields();
 		$fields->push(new HiddenField('DashletID', '', $dashlet->ID));
 		
-		/* @var $fields FieldSet */
+		/* @var $fields FieldList */
 		// there's some that we KNOW we don't want
 		
-		$actions = new FieldSet(
+		$actions = new FieldList(
 			new FormAction('savedashlet', 'Save'),
 				new FormAction('deletedashlet', 'Delete')
 		);

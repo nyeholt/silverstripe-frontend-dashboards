@@ -20,7 +20,7 @@ class MemberDashboard extends WidgetArea {
 	);
 
 	public function WidgetControllers() {
-		$set   = new DataObjectSet();
+		$set   = new ArrayList();
 		$items = $this->ItemsToRender();
 
 		foreach($items as $dashlet) {
@@ -30,7 +30,7 @@ class MemberDashboard extends WidgetArea {
 				if(class_exists($class = "{$class}_Controller")) break;
 			}
 
-			$controller = new $class($dashlet, $this->parent->getController());
+			$controller = Injector::inst()->create($class, $dashlet, $this->parent->getController());
 			$controller->init();
 
 			$set->push($controller);

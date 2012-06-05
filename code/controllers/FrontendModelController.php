@@ -31,8 +31,6 @@ class FrontendModelController extends Page_Controller {
 			Security::permissionFailure($this, "You must be logged in");
 			return;
 		}
-
-		Validator::set_javascript_validation_handler('none');
 	}
 
 	public function index() {

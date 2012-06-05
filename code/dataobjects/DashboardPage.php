@@ -52,7 +52,7 @@ class DashboardPage extends DataObject {
 	public function getDashboard($index) {
 		$dashboards = $this->Dashboards();
 
-		$board = $dashboards->getIterator()->getOffset($index);
+		$board = $dashboards->offsetGet($index);
 		$board->parent = $this;
 
 		return $board;
