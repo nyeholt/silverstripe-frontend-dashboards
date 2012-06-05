@@ -81,9 +81,10 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript('dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
 		Requirements::javascript('dashboards/javascript/dashboards.js');
+		Requirements::javascript('dashboards/javascript/dashboard-dialogs.js');
 		Requirements::css('dashboards/css/dashboards.css');
 	}
-	
+
 	public static function set_allowed_dashlets($dashlets) {
 		$keys = array_keys($dashlets);
 		if (count($keys) && is_int($keys[0])) {

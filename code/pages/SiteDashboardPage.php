@@ -14,10 +14,34 @@ class SiteDashboardPage_Controller extends DashboardController {
 		
 	);
 
+	public static $dependencies = array(
+		'dataService'		=> '%$DataService',
+	);
+	
 	public function init() {
 		parent::init();
-		Requirements::javascript('dashboards/javascript/jquery-ui-1.8.5.custom.min.js');
+		
+		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js'); // -1.8.5.custom.min.js');
 		Requirements::css('dashboards/thirdparty/aristo/aristo.css');
+	}
+	
+	/**
+	 * Overridden to make sure the dashboard page is attached to the correct controller
+	 * @return type 
+	 */
+	protected function getRecord() {
+		$id = (int) $this->request->param('ID'); 
+		if (!$id) {
+			$id = (int) $this->request->requestVar('ID');
+		}
+		if ($id) {
+			$item = $this->dataService->byId($this->stat('model_class'), $id);
+			if ($item instanceof DashboardPage) {
+				$item->setController($this);
+			}
+
+			return $item;
+		}
 	}
 	
 	public function Link($action = null) {
