@@ -100,8 +100,8 @@
 
 			dialog.dialog({
 				title:   "Edit Dashlet",
-				width:   800,
-				height:  600,
+				width:   600,
+				height:  400,
 				modal:   true,
 				buttons: buttons
 			});

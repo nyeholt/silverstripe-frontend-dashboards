@@ -10,15 +10,15 @@ class DashboardUser extends DataExtension {
 		
 	);
 	
-	public static $has_many = array(
-		'Dashboards'			=> 'DashboardPage'
-	);
-	
 	public $dataService;
 	
 	public static $dependencies = array(
 		'dataService'		=> '%$DataService'
 	);
+	
+	public function gravatarHash() {
+		return md5(strtolower(trim($this->owner->Email)));
+	}
 
 	public function myDashboards() {
 		return $this->dataService->getAllDashboardPage('"OwnerID" = '.$this->owner->ID);
