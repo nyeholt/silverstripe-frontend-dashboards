@@ -46,7 +46,6 @@ class SiteDashboardPage_Controller extends DashboardController {
 	
 	public function Link($action = null) {
 		$dashboard = $this->currentDashboard;
-		$base      = $this->data()->Link($action ? $action : true);
 
 		if($dashboard && $dashboard->URLSegment != 'main') {
 			return Controller::join_links(

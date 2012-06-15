@@ -11,9 +11,9 @@ class DashboardController extends FrontendModelController {
 	public static $model_class = 'DashboardPage';
 	
 	static $url_handlers = array(
-		'widget/$ID'			=> 'handleDashlet',
-		'dashlet/$ID'			=> 'handleDashlet',	// what it should be
-		'board/$URLSegment'				=> 'handleBoard',
+		'widget/$ID'					=> 'handleDashlet',
+		'dashlet/$ID'					=> 'handleDashlet',	// what it should be
+		'board/$URLSegment/$MemberID'	=> 'handleBoard',
 	);
 
 	public static $allowed_actions = array(
@@ -33,20 +33,23 @@ class DashboardController extends FrontendModelController {
 
 	private static $allowed_dashlets = array();
 	
+	public static $dependencies = array(
+		'injector'				=> '%$Injector', 
+		'securityContext'		=> '%$SecurityContext',
+		'dataService'			=> '%$DataService',
+	);
+	
+	public $injector;
+	public $securityContext;
+	
+	/**
+	 * @var DataService
+	 */
+	public $dataService;
+
 	public function __construct($page=null, $dashboard=null) {
 		if ($dashboard && $dashboard instanceof DashboardPage) {
 			$this->currentDashboard = $dashboard;
-		} else {
-			Restrictable::set_enabled(false);
-			if (Member::currentUserID()) {
-				Restrictable::set_enabled(true);
-				$this->currentDashboard = $this->getDashboard();
-			}
-			Restrictable::set_enabled(true);
-		}
-		
-		if ($this->currentDashboard) {
-			$this->currentDashboard->setController($this);
 		}
 
 		if (!count(self::$allowed_dashlets)) {
@@ -66,6 +69,20 @@ class DashboardController extends FrontendModelController {
 	}
 	
 	public function init() {
+		
+		if (!$this->currentDashboard) {
+			Restrictable::set_enabled(false);
+			if (Member::currentUserID()) {
+				Restrictable::set_enabled(true);
+				$this->currentDashboard = $this->getDashboard();
+			}
+			Restrictable::set_enabled(true);
+			
+			if ($this->currentDashboard) {
+				$this->currentDashboard->setController($this);
+			}
+		}
+		
 		parent::init();
 		if (!Member::currentUserID() && !$this->redirectedTo()) {
 			Security::permissionFailure($this, "You must be logged in");
@@ -116,7 +133,7 @@ class DashboardController extends FrontendModelController {
 	public function index() {
 		$page = $this->currentDashboard ? $this->currentDashboard : $this->getDashboard();
 		if (!$page || !$page->exists()) {
-			$page = singleton('SecurityContext')->getMember()->createDashboard('main', true);
+			$page = $this->securityContext->getMember()->createDashboard('main', true);
 		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
 	}
@@ -128,8 +145,21 @@ class DashboardController extends FrontendModelController {
 		return $this->index();
 	}
 
-	protected function getDashboard($name='main') {
-		$page = singleton('SecurityContext')->getMember()->getNamedDashboard($name);
+	protected function getDashboard($name='main', $memberId = null) {
+		if ($memberId) {
+			// try and get the page from that user, if there's read access
+			$member = $this->dataService->memberById($memberId);
+			
+			if (!$member) {
+				throw new PermissionDeniedException();
+			}
+			
+		} else {
+			$member = $this->securityContext->getMember();
+		}
+		
+		$page = $member->getNamedDashboard($name);
+		
 		return $page;
 	}
 
@@ -141,13 +171,13 @@ class DashboardController extends FrontendModelController {
 		$items = (array) $this->request->postVar('order');
 		
 		if ($dashboardId) {
-			$dashboard = singleton('DataService')->memberDashboardById($dashboardId);
+			$dashboard = $this->dataService->memberDashboardById($dashboardId);
 			if ($dashboard && $dashboard->exists()) {
 				
 				$dashboard->Widgets()->removeAll();
 				if (is_array($items)) {
 					foreach ($items as $i => $widgetId) {
-						$widget = singleton('DataService')->dashletById($widgetId);
+						$widget = $this->dataService->dashletById($widgetId);
 						if ($widget) {
 							$widget->ParentID = $dashboard->ID;
 							$widget->Sort = $i+1;	// need +1 here so there's no 0 sort val, otherwise onbeforewrite sets it automatically.
@@ -172,7 +202,7 @@ class DashboardController extends FrontendModelController {
 	public function adddashboard($data, Form $form) {
 		$title = isset($data['Title']) ? $data['Title'] : '';
 		if ($title) {
-			$page = singleton('SecurityContext')->getMember()->createDashboard($title);
+			$page = $this->securityContext->getMember()->createDashboard($title);
 			$this->redirect($page->Link());
 			return;
 		} else {
@@ -209,7 +239,7 @@ class DashboardController extends FrontendModelController {
 		$type    = $data['DashletClass'];
 
 		if(isset($classes[$type])) {
-			$dashlet = new $type();
+			$dashlet = $this->injector->create($type);
 			if (!$dashlet->canCreate()) {
 				throw new PermissionDeniedException('CreateChildren');
 			}
@@ -222,12 +252,13 @@ class DashboardController extends FrontendModelController {
 	
 	public function handleBoard($request) {
 		$segment = $this->request->param('URLSegment');
-		$board = $this->getDashboard($segment);
+		$userId = $this->request->param('MemberID');
+		$board = $this->getDashboard($segment, $userId);
 		if ($board) {
 			// need this call to make sure the params are properly processed
 			$this->request->allParams();
 			$cls = get_class($this);
-			$controller = new $cls($this->dataRecord, $board);
+			$controller = $this->injector->create($cls, $this->dataRecord, $board);
 			return $controller;
 		}
 		return $this->httpError(404, "Board $segment does not exist");
@@ -246,7 +277,7 @@ class DashboardController extends FrontendModelController {
 		if(!$SQL_id) return false;
 
 		// find widget
-		$dataService = singleton('DataService');
+		$dataService = $this->dataService;
 		
 		$widget = $dataService->dashletById($SQL_id);
 		if (!$widget) {
@@ -264,7 +295,7 @@ class DashboardController extends FrontendModelController {
 			E_USER_ERROR
 		);
 		
-		return new $controllerClass($widget, $this);
+		return $this->injector->create($controllerClass, $widget, $this);
 	}
 	
 	/**
@@ -321,7 +352,7 @@ class DashboardController extends FrontendModelController {
 		$controller = $dashlet->class.'_Controller';
 		$renderObj = $dashlet;
 		if (class_exists($controller)) {
-			$renderObj = new $controller($dashlet, $this);
+			$renderObj = $this->injector->create($controller, $dashlet, $this);
 		}
 		
 		return $renderObj->renderWith('DashletLayout');
@@ -334,7 +365,7 @@ class DashboardController extends FrontendModelController {
 			throw new Exception("Invalid $dashletId in request");
 		}
 		
-		$dashlet = singleton('DataService')->dashletById($dashletId);
+		$dashlet = $this->dataService->dashletById($dashletId);
 		if (!$dashlet) {
 			throw new Exception("Invalid dashlet #$dashletId");
 		}

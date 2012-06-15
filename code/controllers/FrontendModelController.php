@@ -64,7 +64,7 @@ class FrontendModelController extends Page_Controller {
 	}
 
 	public function edit() {
-		if($this->isAjax()) {
+		if($this->request->isAjax()) {
 			return $this->Form()->forAjaxTemplate();
 		} else {
 			if($this->record) {
@@ -91,7 +91,7 @@ class FrontendModelController extends Page_Controller {
 
 		$fields = $object->getFrontEndFields();
 		
-		$actions = new FieldSet(
+		$actions = new FieldList(
 			$button = new FormAction('save', _t('Dashboards.SAVE', 'Save'))
 		);
 		$button->addExtraClass('button');

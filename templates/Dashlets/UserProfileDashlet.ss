@@ -3,7 +3,7 @@
 	<% if Owner.Avatar %>
 	<% else %>
 	<div class="gravaterImage">
-		<img src="http://www.gravatar.com/avatar/$Owner.gravatarHash" />
+		<!-- <img src="http://www.gravatar.com/avatar/$Owner.gravatarHash" /> -->
 	</div>
 	<% end_if %>
 	$Owner.Title
