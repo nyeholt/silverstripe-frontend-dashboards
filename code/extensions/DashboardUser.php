@@ -54,9 +54,9 @@ class DashboardUser extends DataExtension {
 				foreach ($dashlets as $type) {
 					if (class_exists($type)) {
 						$dashlet = new $type;
-						$dashboard = $dashboard->getDashboard($dbid);
-						if ($dashboard && $dashlet->canCreate()) {
-							$dashlet->ParentID = $dashboard->ID;
+						$db = $dashboard->getDashboard($dbid);
+						if ($db && $dashlet->canCreate()) {
+							$dashlet->ParentID = $db->ID;
 							$dashlet->write();
 						}
 					}
