@@ -103,6 +103,31 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public static function set_allowed_dashlets($dashlets) {
+		self::$allowed_dashlets = $dashlets;
+	}
+
+	protected $allowedDashlets = null;
+	
+	public static function get_allowed_dashlets() {
+		return self::$allowed_dashlets;
+	}
+	
+	public function getDashletsList() {
+		if ($this->allowedDashlets) {
+			return $this->allowedDashlets;
+		}
+
+		// prune any that have specific requirements
+		foreach (self::$allowed_dashlets as $cls => $title) {
+			$clazz = is_int($cls) ? $title : $cls;
+			$dummy = singleton($clazz);
+			if (!$dummy->canCreate()) {
+				unset(self::$allowed_dashlets[$cls]);
+			}
+		}
+		
+		$dashlets = self::$allowed_dashlets;
+		
 		$keys = array_keys($dashlets);
 		if (count($keys) && is_int($keys[0])) {
 			foreach (array_values($dashlets) as $dashletClass) {
@@ -110,26 +135,15 @@ class DashboardController extends FrontendModelController {
 				if (!$title) {
 					FormField::name_to_label($dashletClass);
 				}
-				self::$allowed_dashlets[$dashletClass] = $title; 
+				$this->allowedDashlets[$dashletClass] = $title; 
 			}
 		} else {
-			self::$allowed_dashlets = $dashlets;
+			$this->allowedDashlets = self::$allowed_dashlets;
 		}
 		
-		// prune any that have specific requirements
-		foreach (self::$allowed_dashlets as $cls => $title) {
-			$dummy = singleton($cls);
-			if (!$dummy->canCreate()) {
-				unset(self::$allowed_dashlets[$cls]);
-			}
-		}
+		return $this->allowedDashlets;
 	}
-	
-	public static function get_allowed_dashlets() {
-		return self::$allowed_dashlets;
-	}
-	
-	
+
 	public function index() {
 		$page = $this->currentDashboard ? $this->currentDashboard : $this->getDashboard();
 		if (!$page || !$page->exists()) {
@@ -218,10 +232,7 @@ class DashboardController extends FrontendModelController {
 	public function AddDashletForm() {
 		$dashlets = array();
 
-		$allowed = self::get_allowed_dashlets();
-		foreach($allowed as $class) {
-			$dashlets[$class] = $class::$title == 'Widget Title' ? $class : $class::$title;
-		}
+		$dashlets = $this->getDashletsList();
 
 		asort($dashlets);
 
@@ -235,7 +246,7 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public function doAddDashlet($data, $form) {
-		$classes = self::get_allowed_dashlets();
+		$classes = $this->getDashletsList();
 		$type    = $data['DashletClass'];
 
 		if(isset($classes[$type])) {
