@@ -6,14 +6,12 @@
  */
 class DashboardController extends FrontendModelController {
 	
-	protected $currentDashboard;
-	
 	public static $model_class = 'DashboardPage';
 	
 	static $url_handlers = array(
-		'widget/$ID'			=> 'handleDashlet',
-		'dashlet/$ID'			=> 'handleDashlet',	// what it should be
-		'board/$URLSegment'				=> 'handleBoard',
+		'widget/$ID'					=> 'handleDashlet',
+		'dashlet/$ID'					=> 'handleDashlet',	// what it should be
+		'board/$URLSegment/$MemberID'	=> 'handleBoard',
 	);
 
 	public static $allowed_actions = array(
@@ -33,20 +31,25 @@ class DashboardController extends FrontendModelController {
 
 	private static $allowed_dashlets = array();
 	
+	public static $dependencies = array(
+		'injector'				=> '%$Injector', 
+		'securityContext'		=> '%$SecurityContext',
+		'dataService'			=> '%$DataService',
+	);
+
+	public $injector;
+	public $securityContext;
+	
+	/**
+	 * @var DataService
+	 */
+	public $dataService;
+	
+	protected $currentDashboard;
+
 	public function __construct($page=null, $dashboard=null) {
 		if ($dashboard && $dashboard instanceof DashboardPage) {
 			$this->currentDashboard = $dashboard;
-		} else {
-			Restrictable::set_enabled(false);
-			if (Member::currentUserID()) {
-				Restrictable::set_enabled(true);
-				$this->currentDashboard = $this->getDashboard();
-			}
-			Restrictable::set_enabled(true);
-		}
-		
-		if ($this->currentDashboard) {
-			$this->currentDashboard->setController($this);
 		}
 
 		if (!count(self::$allowed_dashlets)) {
@@ -66,11 +69,29 @@ class DashboardController extends FrontendModelController {
 	}
 	
 	public function init() {
-		parent::init();
-		if (!Member::currentUserID() && !$this->redirectedTo()) {
-			Security::permissionFailure($this, "You must be logged in");
-			return;
+		
+		if (!$this->currentDashboard) {
+			Restrictable::set_enabled(false);
+			if (Member::currentUserID()) {
+				Restrictable::set_enabled(true);
+				$this->currentDashboard = $this->getDashboard();
+			}
+			Restrictable::set_enabled(true);
+			
+			if ($this->currentDashboard) {
+				$this->currentDashboard->setController($this);
+			}
 		}
+		
+		parent::init();
+		
+		if ($this->currentDashboard && !$this->currentDashboard->checkPerm('View')) {
+			if (!Member::currentUserID() && !$this->redirectedTo()) {
+				Security::permissionFailure($this, "You must be logged in");
+				return;
+			}
+		}
+		
 
 		// add the following to your own page init() to ensure requirements
 		// are met - but you're likely to have them anyway.
@@ -81,10 +102,36 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript('dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
 		Requirements::javascript('dashboards/javascript/dashboards.js');
+		Requirements::javascript('dashboards/javascript/dashboard-dialogs.js');
 		Requirements::css('dashboards/css/dashboards.css');
 	}
-	
+
 	public static function set_allowed_dashlets($dashlets) {
+		self::$allowed_dashlets = $dashlets;
+	}
+
+	protected $allowedDashlets = null;
+	
+	public static function get_allowed_dashlets() {
+		return self::$allowed_dashlets;
+	}
+	
+	public function getDashletsList() {
+		if ($this->allowedDashlets) {
+			return $this->allowedDashlets;
+		}
+
+		// prune any that have specific requirements
+		foreach (self::$allowed_dashlets as $cls => $title) {
+			$clazz = is_int($cls) ? $title : $cls;
+			$dummy = singleton($clazz);
+			if (!$dummy->canCreate()) {
+				unset(self::$allowed_dashlets[$cls]);
+			}
+		}
+		
+		$dashlets = self::$allowed_dashlets;
+		
 		$keys = array_keys($dashlets);
 		if (count($keys) && is_int($keys[0])) {
 			foreach (array_values($dashlets) as $dashletClass) {
@@ -92,34 +139,23 @@ class DashboardController extends FrontendModelController {
 				if (!$title) {
 					FormField::name_to_label($dashletClass);
 				}
-				self::$allowed_dashlets[$dashletClass] = $title; 
+				$this->allowedDashlets[$dashletClass] = $title; 
 			}
 		} else {
-			self::$allowed_dashlets = $dashlets;
-		}
-		self::$pruned_dashlets = false;
-	}
-	
-	private static $pruned_dashlets = false;
-	
-	public static function get_allowed_dashlets() {
-		if (!self::$pruned_dashlets) {
-			// prune any that have specific requirements
-			foreach (self::$allowed_dashlets as $cls => $title) {
-				$dummy = singleton($cls);
-				if (!$dummy->canCreate()) {
-					unset(self::$allowed_dashlets[$cls]);
-				}
-			}
-			self::$pruned_dashlets = true;
+			$this->allowedDashlets = self::$allowed_dashlets;
 		}
 		
-		return self::$allowed_dashlets;
+		return $this->allowedDashlets;
 	}
-	
-	
+
 	public function index() {
 		$page = $this->currentDashboard ? $this->currentDashboard : $this->getDashboard();
+		if (!$page || !$page->exists()) {
+			if (!$this->securityContext->getMember()) {
+				return Security::permissionFailure($this, _t('DashboardController.USER_REQUIRED', 'You must be logged in to do that'));
+			}
+			$page = $this->securityContext->getMember()->createDashboard('main', true);
+		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
 	}
 
@@ -130,12 +166,23 @@ class DashboardController extends FrontendModelController {
 		return $this->index();
 	}
 
-	protected function getDashboard($name='main') {
-		$page = singleton('SecurityContext')->getMember()->getNamedDashboard($name);
-		if ((!$page || !$page->exists()) && $name == 'main') {
-			$page = singleton('SecurityContext')->getMember()->createDashboard($name, true);
+	protected function getDashboard($name='main', $memberId = null) {
+		if ($memberId) {
+			// try and get the page from that user, if there's read access
+			// we're deliberately loading the member without permission checks 
+			$member = Member::get()->byID($memberId);
+			// $member = $this->dataService->memberById($memberId);
+			
+			if (!$member) {
+				throw new PermissionDeniedException('View');
+			}
+		} else {
+			$member = $this->securityContext->getMember();
 		}
-		return $page;
+		if ($member) {
+			$page = $member->getNamedDashboard($name);
+			return $page;
+		}
 	}
 
 	/**
@@ -146,13 +193,13 @@ class DashboardController extends FrontendModelController {
 		$items = (array) $this->request->postVar('order');
 		
 		if ($dashboardId) {
-			$dashboard = singleton('DataService')->memberDashboardById($dashboardId);
+			$dashboard = $this->dataService->memberDashboardById($dashboardId);
 			if ($dashboard && $dashboard->exists()) {
 				
 				$dashboard->Widgets()->removeAll();
 				if (is_array($items)) {
 					foreach ($items as $i => $widgetId) {
-						$widget = singleton('DataService')->dashletById($widgetId);
+						$widget = $this->dataService->dashletById($widgetId);
 						if ($widget) {
 							$widget->ParentID = $dashboard->ID;
 							$widget->Sort = $i+1;	// need +1 here so there's no 0 sort val, otherwise onbeforewrite sets it automatically.
@@ -165,11 +212,11 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public function DashboardForm() {
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new TextField('Title', _t('Dashboard.TITLE', 'Title'))
 		);
 
-		$actions = new FieldSet(new FormAction('adddashboard', _t('Dashboard.ADD_NEW', 'Add Dashboard')));
+		$actions = new FieldList(new FormAction('adddashboard', _t('Dashboard.ADD_NEW', 'Add Dashboard')));
 		$form = new Form($this, 'DashboardForm', $fields, $actions);
 		return $form;
 	}
@@ -177,7 +224,7 @@ class DashboardController extends FrontendModelController {
 	public function adddashboard($data, Form $form) {
 		$title = isset($data['Title']) ? $data['Title'] : '';
 		if ($title) {
-			$page = singleton('SecurityContext')->getMember()->createDashboard($title);
+			$page = $this->securityContext->getMember()->createDashboard($title);
 			$this->redirect($page->Link());
 			return;
 		} else {
@@ -193,31 +240,25 @@ class DashboardController extends FrontendModelController {
 	public function AddDashletForm() {
 		$dashlets = array();
 
-		$allowed = self::get_allowed_dashlets();
-		foreach($allowed as $class => $title) {
-			if (is_int($class)) {
-				$class = $title;
-			}
-			$dashlets[$class] = $class::$title == 'Widget Title' ? $class : $class::$title;
-		}
+		$dashlets = $this->getDashletsList();
 
 		asort($dashlets);
 
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new DropdownField('DashletClass', 'Dashlet', $dashlets, null, null, 'Add dashlet...')
 		);
 
-		return new Form($this, 'AddDashletForm', $fields, new FieldSet(
+		return new Form($this, 'AddDashletForm', $fields, new FieldList(
 			new FormAction('doAddDashlet', _t('Dashboards.ADD_DASHLET', 'Add Dashlet'))
 		));
 	}
 
 	public function doAddDashlet($data, $form) {
-		$classes = self::get_allowed_dashlets();
+		$classes = $this->getDashletsList();
 		$type    = $data['DashletClass'];
 
 		if(isset($classes[$type])) {
-			$dashlet = new $type();
+			$dashlet = $this->injector->create($type);
 			if (!$dashlet->canCreate()) {
 				throw new PermissionDeniedException('CreateChildren');
 			}
@@ -230,12 +271,18 @@ class DashboardController extends FrontendModelController {
 	
 	public function handleBoard($request) {
 		$segment = $this->request->param('URLSegment');
-		$board = $this->getDashboard($segment);
+		$userId = $this->request->param('MemberID');
+		try {
+			$board = $this->getDashboard($segment, $userId);
+		} catch (PermissionDeniedException $pde) {
+			return Security::permissionFailure($this, 'You do not have permission to view that');
+		}
+
 		if ($board) {
 			// need this call to make sure the params are properly processed
 			$this->request->allParams();
 			$cls = get_class($this);
-			$controller = new $cls($this->dataRecord, $board);
+			$controller = $this->injector->create($cls, $this->dataRecord, $board);
 			return $controller;
 		}
 		return $this->httpError(404, "Board $segment does not exist");
@@ -254,7 +301,7 @@ class DashboardController extends FrontendModelController {
 		if(!$SQL_id) return false;
 
 		// find widget
-		$dataService = singleton('DataService');
+		$dataService = $this->dataService;
 		
 		$widget = $dataService->dashletById($SQL_id);
 		if (!$widget) {
@@ -272,7 +319,7 @@ class DashboardController extends FrontendModelController {
 			E_USER_ERROR
 		);
 		
-		return new $controllerClass($widget, $this);
+		return $this->injector->create($controllerClass, $widget, $this);
 	}
 	
 	/**
@@ -288,10 +335,10 @@ class DashboardController extends FrontendModelController {
 		$fields = $dashlet->getDashletFields();
 		$fields->push(new HiddenField('DashletID', '', $dashlet->ID));
 		
-		/* @var $fields FieldSet */
+		/* @var $fields FieldList */
 		// there's some that we KNOW we don't want
 		
-		$actions = new FieldSet(
+		$actions = new FieldList(
 			new FormAction('savedashlet', 'Save'),
 				new FormAction('deletedashlet', 'Delete')
 		);
@@ -322,6 +369,8 @@ class DashboardController extends FrontendModelController {
 			$this->response->setBody('{ "success": true }');
 			return $this->response;
 		}
+		
+		throw new PermissionDeniedException('Delete');
 	}
 
 	public function loaddashlet() {
@@ -329,7 +378,7 @@ class DashboardController extends FrontendModelController {
 		$controller = $dashlet->class.'_Controller';
 		$renderObj = $dashlet;
 		if (class_exists($controller)) {
-			$renderObj = new $controller($dashlet, $this);
+			$renderObj = $this->injector->create($controller, $dashlet, $this);
 		}
 		
 		return $renderObj->renderWith('DashletLayout');
@@ -342,7 +391,7 @@ class DashboardController extends FrontendModelController {
 			throw new Exception("Invalid $dashletId in request");
 		}
 		
-		$dashlet = singleton('DataService')->dashletById($dashletId);
+		$dashlet = $this->dataService->dashletById($dashletId);
 		if (!$dashlet) {
 			throw new Exception("Invalid dashlet #$dashletId");
 		}

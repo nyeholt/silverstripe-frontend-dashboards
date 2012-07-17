@@ -60,3 +60,7 @@
 .ui-dialog .dashlet-dialog-loading {
 	background: url(../images/spinner.gif) no-repeat center center;
 }
+
+.closed-dialog {
+	display: none;
+}

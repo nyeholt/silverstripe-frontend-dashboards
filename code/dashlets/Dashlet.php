@@ -28,7 +28,7 @@ class Dashlet extends Widget {
 	 * @return FieldSet 
 	 */
 	public function getDashletFields() {
-		$fields = new FieldSet(new TextField('Title', _t('Dashlet.TITLE', 'Title')));
+		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')));
 		$this->extend('updateDashletFields', $fields);
 		return $fields;
 	}
@@ -59,7 +59,7 @@ class Dashlet extends Widget {
 	public function canCreate($member=null) {
 		$config = SiteConfig::current_site_config();
 		$required = $this->requiredPermission();
-		if ($config->checkPerm($required)) {
+		if ($config->hasMethod('checkPerm') && $config->checkPerm($required)) {
 			return true;
 		}
 

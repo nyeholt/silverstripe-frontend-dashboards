@@ -4,33 +4,32 @@
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD http://silverstripe.org/BSD-license
  */
-class DashboardUser extends DataObjectDecorator {
+class DashboardUser extends DataExtension {
 	
 	public static $default_dashlets = array(
 		
 	);
 	
-	public function extraStatics() {
-		return array(
-			'db'		=> array(
-			),
-
-			'has_many'	=> array(
-				'Dashboards'			=> 'DashboardPage'
-			),
-		);
-	}
+	public $dataService;
 	
+	public static $dependencies = array(
+		'dataService'		=> '%$DataService'
+	);
+	
+	public function gravatarHash() {
+		return md5(strtolower(trim($this->owner->Email)));
+	}
+
 	public function myDashboards() {
-		return singleton('DataService')->getAllDashboardPage('"OwnerID" = '.$this->owner->ID);
+		return $this->dataService->getAllDashboardPage('"OwnerID" = '.$this->owner->ID);
 	}
 	
 	public function sharedDashboards() {
-		return singleton('DataService')->getAllDashboardPage('"OwnerID" <> '.$this->owner->ID);
+		return $this->dataService->getAllDashboardPage('"OwnerID" <> '.$this->owner->ID);
 	}
 
 	public function getNamedDashboard($segment) {
-		$dashboard = singleton('DataService')->getOneDashboardPage('"OwnerID" = '.$this->owner->ID.' AND "URLSegment" = \''.Convert::raw2sql($segment).'\'');
+		$dashboard = $this->dataService->getOneDashboardPage('"OwnerID" = '.$this->owner->ID.' AND "URLSegment" = \''.Convert::raw2sql($segment).'\'');
 		return $dashboard;
 	}
 

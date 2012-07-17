@@ -2,7 +2,12 @@
 
 /**
  * A dashboard page is a url identifiable dashboard in the system that a user can
- * customise to their whim.
+ * customise to their whim. This is NOT inherited from SS's SiteTree/Page, 
+ * but is a standalone type. 
+ * 
+ * These are accessed in the context of a DashboardController; that dashboard can be the controller
+ * to a SilverStripe Page object, but doesn't need to be (ie this can 
+ * operate via direct controller requests). 
  *
  * @author marcus@silverstripe.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
@@ -20,18 +25,19 @@ class DashboardPage extends DataObject {
 
 	public static $max_dashboards = 3;
 	public static $db = array(
-		'Title'      => 'Varchar(128)',
-		'URLSegment' => 'Varchar(64)',
-		'Layout'     => 'Varchar(15)'
+		'Title'			=> 'Varchar(128)',
+		'URLSegment'	=> 'Varchar(64)',
+		'Layout'		=> 'Varchar(15)',
 	);
 	
 	public static $defaults = array(
 		'ColumnLayout'			=> '2colRW'
 	);
-	
+
 	public static $has_many = array(
 		'Dashboards'			=> 'MemberDashboard',
 	);
+
 	public static $extensions = array(
 		'Restrictable',
 	);
@@ -52,7 +58,7 @@ class DashboardPage extends DataObject {
 	public function getDashboard($index) {
 		$dashboards = $this->Dashboards();
 
-		$board = $dashboards->getIterator()->getOffset($index);
+		$board = $dashboards->offsetGet($index);
 		$board->parent = $this;
 
 		return $board;
@@ -81,7 +87,7 @@ class DashboardPage extends DataObject {
 
 		$fields->removeByName('InheritPerms');
 		$fields->removeByName('OwnerID');
-		$fields->removeByName('PublicAccess');
+//		$fields->removeByName('PublicAccess');
 		
 		return $fields;
 	}
