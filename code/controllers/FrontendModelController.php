@@ -26,11 +26,6 @@ class FrontendModelController extends Page_Controller {
 	
 	public function init() {
 		parent::init();
-
-		if (!Member::currentUserID() && !$this->redirectedTo()) {
-			Security::permissionFailure($this, "You must be logged in");
-			return;
-		}
 	}
 
 	public function index() {
@@ -60,10 +55,18 @@ class FrontendModelController extends Page_Controller {
 	}
 	
 	public function all() {
+		if (!Member::currentUserID()) {
+			Security::permissionFailure($this, "You must be logged in");
+			return;
+		}
 		return $this->renderWith(array($this->stat('model_class').'_list', 'Page'));
 	}
 
 	public function edit() {
+		if (!Member::currentUserID()) {
+			Security::permissionFailure($this, "You must be logged in");
+			return;
+		}
 		if($this->request->isAjax()) {
 			return $this->Form()->forAjaxTemplate();
 		} else {
@@ -113,6 +116,10 @@ class FrontendModelController extends Page_Controller {
 		// if there's no existing id passed in the request, we must assume we're
 		// creating a new one, so chec kthat it doesn't exist already.
 		if (!$this->record) {
+			if (!Member::currentUserID()) {
+				Security::permissionFailure($this, "You must be logged in");
+				return;
+			}
 			$existing = singleton('DataService')->getOne($this->stat('model_class'),array('Title' => $this->request->requestVar('Title')));
 			if ($existing) {
 				throw new Exception("Record already exists");

@@ -25,15 +25,14 @@ class DashboardPage extends DataObject {
 
 	public static $max_dashboards = 3;
 	public static $db = array(
-		'Title'      => 'Varchar(128)',
-		'URLSegment' => 'Varchar(64)',
-		'Layout'     => 'Varchar(15)'
+		'Title'			=> 'Varchar(128)',
+		'URLSegment'	=> 'Varchar(64)',
+		'Layout'		=> 'Varchar(15)',
 	);
 	
 	public static $defaults = array(
 		'ColumnLayout'			=> '2colRW'
 	);
-	
 
 	public static $has_many = array(
 		'Dashboards'			=> 'MemberDashboard',
@@ -88,7 +87,7 @@ class DashboardPage extends DataObject {
 
 		$fields->removeByName('InheritPerms');
 		$fields->removeByName('OwnerID');
-		$fields->removeByName('PublicAccess');
+//		$fields->removeByName('PublicAccess');
 		
 		return $fields;
 	}

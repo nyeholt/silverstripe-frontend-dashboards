@@ -8,6 +8,7 @@
 	<% end_if %>
 	
 	$Owner.Title
+
 <% else %>
 
 Please <a href="Security/login">login</a>

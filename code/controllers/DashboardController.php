@@ -6,8 +6,6 @@
  */
 class DashboardController extends FrontendModelController {
 	
-	protected $currentDashboard;
-	
 	public static $model_class = 'DashboardPage';
 	
 	static $url_handlers = array(
@@ -38,7 +36,7 @@ class DashboardController extends FrontendModelController {
 		'securityContext'		=> '%$SecurityContext',
 		'dataService'			=> '%$DataService',
 	);
-	
+
 	public $injector;
 	public $securityContext;
 	
@@ -46,6 +44,8 @@ class DashboardController extends FrontendModelController {
 	 * @var DataService
 	 */
 	public $dataService;
+	
+	protected $currentDashboard;
 
 	public function __construct($page=null, $dashboard=null) {
 		if ($dashboard && $dashboard instanceof DashboardPage) {
@@ -84,10 +84,14 @@ class DashboardController extends FrontendModelController {
 		}
 		
 		parent::init();
-		if (!Member::currentUserID() && !$this->redirectedTo()) {
-			Security::permissionFailure($this, "You must be logged in");
-			return;
+		
+		if ($this->currentDashboard && !$this->currentDashboard->checkPerm('View')) {
+			if (!Member::currentUserID() && !$this->redirectedTo()) {
+				Security::permissionFailure($this, "You must be logged in");
+				return;
+			}
 		}
+		
 
 		// add the following to your own page init() to ensure requirements
 		// are met - but you're likely to have them anyway.
@@ -147,6 +151,9 @@ class DashboardController extends FrontendModelController {
 	public function index() {
 		$page = $this->currentDashboard ? $this->currentDashboard : $this->getDashboard();
 		if (!$page || !$page->exists()) {
+			if (!$this->securityContext->getMember()) {
+				return Security::permissionFailure($this, _t('DashboardController.USER_REQUIRED', 'You must be logged in to do that'));
+			}
 			$page = $this->securityContext->getMember()->createDashboard('main', true);
 		}
 		return $this->customise(array('Dashboard' => $page))->renderWith(array('Dashboard', 'Page'));
@@ -162,19 +169,20 @@ class DashboardController extends FrontendModelController {
 	protected function getDashboard($name='main', $memberId = null) {
 		if ($memberId) {
 			// try and get the page from that user, if there's read access
-			$member = $this->dataService->memberById($memberId);
+			// we're deliberately loading the member without permission checks 
+			$member = Member::get()->byID($memberId);
+			// $member = $this->dataService->memberById($memberId);
 			
 			if (!$member) {
-				throw new PermissionDeniedException();
+				throw new PermissionDeniedException('View');
 			}
-			
 		} else {
 			$member = $this->securityContext->getMember();
 		}
-		
-		$page = $member->getNamedDashboard($name);
-		
-		return $page;
+		if ($member) {
+			$page = $member->getNamedDashboard($name);
+			return $page;
+		}
 	}
 
 	/**
@@ -264,7 +272,12 @@ class DashboardController extends FrontendModelController {
 	public function handleBoard($request) {
 		$segment = $this->request->param('URLSegment');
 		$userId = $this->request->param('MemberID');
-		$board = $this->getDashboard($segment, $userId);
+		try {
+			$board = $this->getDashboard($segment, $userId);
+		} catch (PermissionDeniedException $pde) {
+			return Security::permissionFailure($this, 'You do not have permission to view that');
+		}
+
 		if ($board) {
 			// need this call to make sure the params are properly processed
 			$this->request->allParams();
@@ -356,6 +369,8 @@ class DashboardController extends FrontendModelController {
 			$this->response->setBody('{ "success": true }');
 			return $this->response;
 		}
+		
+		throw new PermissionDeniedException('Delete');
 	}
 
 	public function loaddashlet() {
