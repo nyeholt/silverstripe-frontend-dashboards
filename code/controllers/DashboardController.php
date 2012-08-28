@@ -78,9 +78,7 @@ class DashboardController extends FrontendModelController {
 			}
 			Restrictable::set_enabled(true);
 			
-			if ($this->currentDashboard) {
-				$this->currentDashboard->setController($this);
-			}
+			
 		}
 		
 		parent::init();
@@ -181,6 +179,9 @@ class DashboardController extends FrontendModelController {
 		}
 		if ($member) {
 			$page = $member->getNamedDashboard($name);
+			if ($page) {
+				$page->setController($this);
+			}
 			return $page;
 		}
 	}

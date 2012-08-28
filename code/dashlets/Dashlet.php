@@ -62,7 +62,6 @@ class Dashlet extends Widget {
 		if ($config->hasMethod('checkPerm') && $config->checkPerm($required)) {
 			return true;
 		}
-
 		return parent::canCreate($member);
 	}
 }

@@ -54,6 +54,10 @@ class DashboardPage extends DataObject {
 	public function setController($controller) {
 		$this->controller = $controller;
 	}
+	
+	public function __construct($record = null, $isSingleton = false, $model = null) {
+		parent::__construct($record, $isSingleton, $model);
+	}
 
 	public function getDashboard($index) {
 		$dashboards = $this->Dashboards();

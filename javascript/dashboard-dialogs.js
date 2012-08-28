@@ -70,6 +70,11 @@ window.SS = window.SS || {}
 		return false;
 	});
 	
+	$('#editDashlets').click(function () {
+		$('div.dashlet-title').toggle();
+		return false;
+	})
+	
 	$(".ui-dialog form").live("submit", function() {
 		var form   = $(this);
 		var dialog = form.parents(".ui-dialog-content");
