@@ -1,6 +1,7 @@
 {
 	"name": "silverstripe/frontend-dashboards",
 	"description": "Allows the creation of user-manageable dashboards in a frontend UI",
+	"type": "silverstripe-module",
 	"require": {
 		"php": ">=5.3.2",
 		"silverstripe/framework": "3.1.*",
