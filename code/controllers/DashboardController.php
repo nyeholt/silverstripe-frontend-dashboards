@@ -101,12 +101,12 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-form/jquery.form.js');
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');
-		Requirements::javascript('dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
-		Requirements::javascript('dashboards/javascript/dashboards.js');
+		Requirements::javascript('frontend-dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
+		Requirements::javascript('frontend-dashboards/javascript/dashboards.js');
 
-		Requirements::javascript('dashboards/javascript/dashboard-dialogs.js');
-		Requirements::css('dashboards/css/dashboards.css');
-		Requirements::css('dashboards/css/dashlets.css');
+		Requirements::javascript('frontend-dashboards/javascript/dashboard-dialogs.js');
+		Requirements::css('frontend-dashboards/css/dashboards.css');
+		Requirements::css('frontend-dashboards/css/dashlets.css');
 	}
 
 	public static function set_allowed_dashlets($dashlets) {
