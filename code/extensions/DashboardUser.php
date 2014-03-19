@@ -11,9 +11,11 @@ class DashboardUser extends DataExtension {
 	);
 	
 	public $dataService;
+	public $securityContext;
 	
 	public static $dependencies = array(
-		'dataService'		=> '%$DataService'
+		'dataService'		=> '%$DataService',
+		'securityContext'	=>	'%$SecurityContext'
 	);
 	
 	public function gravatarHash() {
@@ -30,6 +32,14 @@ class DashboardUser extends DataExtension {
 
 	public function getNamedDashboard($segment) {
 		$dashboard = $this->dataService->getOneDashboardPage('"OwnerID" = '.$this->owner->ID.' AND "URLSegment" = \''.Convert::raw2sql($segment).'\'');
+		return $dashboard;
+	}
+	
+	public function getAnyDashboard() {
+		$dashboard = $this->dataService->getOneDashboardPage('"OwnerID" = '.$this->owner->ID);
+		if (!$dashboard) {
+			$dashboard = $this->securityContext->getMember()->createDashboard('main', true);
+		}
 		return $dashboard;
 	}
 

@@ -21,6 +21,7 @@ class SiteDashboardPage_Controller extends DashboardController {
 	public function init() {
 		parent::init();
 		
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js'); // -1.8.5.custom.min.js');
 		Requirements::css('dashboards/thirdparty/aristo/aristo.css');
 		
@@ -53,8 +54,11 @@ class SiteDashboardPage_Controller extends DashboardController {
 		$dashboard = $this->currentDashboard;
 
 		if($dashboard && $dashboard->URLSegment != 'main') {
+			$identifier = Member::get_unique_identifier_field();
+			$identifier = $dashboard->Owner()->$identifier;
+			
 			return Controller::join_links(
-				$this->data()->Link(true), 'board', $dashboard->URLSegment, $action
+				$this->data()->Link(true), 'user', $identifier, $dashboard->URLSegment, $action
 			);
 		} else {
 			return $this->data()->Link($action ? $action : true);

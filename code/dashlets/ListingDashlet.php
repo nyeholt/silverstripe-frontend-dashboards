@@ -19,7 +19,7 @@ class ListingDashlet extends Dashlet {
 		$types = ClassInfo::subclassesFor('DataObject');
 		$types = array_combine($types, $types);
 		ksort($types);
-		$fields->push(new DropdownField('ListType', _t('ListingDashlet.LIST_TYPE', 'List items of type'), $types));
+		$fields->push(new DropdownField('ListType', _t('ListingDashlet.LIST_TYPE', 'List Items of Type'), $types));
 		return $fields;
 	}
 	
@@ -28,7 +28,7 @@ class ListingDashlet extends Dashlet {
 		$types = ClassInfo::subclassesFor('DataObject');
 		$types = array_combine($types, $types);
 		ksort($types);
-		$fields->push(new DropdownField('ListType', _t('ListingDashlet.LIST_TYPE', 'List items of type'), $types));
+		$fields->push(new DropdownField('ListType', _t('ListingDashlet.LIST_TYPE', 'List Items of Type'), $types));
 		return $fields;
 	}
 	

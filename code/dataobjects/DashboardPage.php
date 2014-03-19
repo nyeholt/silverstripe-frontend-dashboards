@@ -67,6 +67,14 @@ class DashboardPage extends DataObject {
 
 		return $board;
 	}
+	
+	public function onBeforeWrite() {
+		parent::onBeforeWrite();
+		
+		if ($this->isChanged('URLSegment')) {
+			$this->URLSegment = URLSegmentFilter::create()->filter($this->URLSegment);
+		}
+	}
 
 	public function onAfterWrite() {
 		parent::onAfterWrite();
@@ -107,9 +115,12 @@ class DashboardPage extends DataObject {
 	}
 
 	public function Link($action='') {
+		$identifier = Member::get_unique_identifier_field();
+		$identifier = $this->Owner()->$identifier;
+			
 		if ($this->controller) {
-			return Controller::join_links($this->controller->Link(), 'board', $this->URLSegment, $action);
+			return Controller::join_links($this->controller->Link(), 'user', $identifier, $this->URLSegment, $action);
 		}
-		return Controller::join_links(Director::baseURL(), 'dashboard', 'board', $this->URLSegment, $action);
+		return Controller::join_links(Director::baseURL(), 'dashboard', 'user', $identifier, $this->URLSegment, $action);
 	}
 }

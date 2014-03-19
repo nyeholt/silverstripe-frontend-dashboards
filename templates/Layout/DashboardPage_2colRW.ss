@@ -1,9 +1,9 @@
 
 
-<div class="grid_6 dashboardContainer">
+<div class="col-md-4 dashboardContainer">
 	$getDashboard(0)
 </div>
-<div class="grid_10 dashboardContainer">
+<div class="col-md-8 dashboardContainer">
 	$getDashboard(1)
 </div>
 

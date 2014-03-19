@@ -37,13 +37,13 @@ class FrontendModelController extends Page_Controller {
 		}
 	}
 	
-	public function handleAction($request) {
+	public function handleAction($request, $action) {
 		$this->record = $this->getRecord();
 		if ($this->request->param('ID') && is_int($this->request->param('ID')) && !$this->record) {
 			Security::permissionFailure($this, "You do not have permission to that");
 			return;
 		}
-		return parent::handleAction($request);
+		return parent::handleAction($request, $action);
 	}
 
 	public function view() {
@@ -132,7 +132,8 @@ class FrontendModelController extends Page_Controller {
 		$form->saveInto($this->record);
 		$this->record->write();
 
-		$this->redirect($this->record->Link());
+		//$this->redirect($this->record->Link());
+		$this->redirectBack();
 	}
 	
 	public function Record() {

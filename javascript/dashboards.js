@@ -69,6 +69,13 @@
 
 			return false;
 		});
+		
+		$('.dashlet-action-refresh').live('click', function (e) {
+			e.preventDefault();
+			var dashlet = $(this).closest(".dashlet");
+			dashlet.refresh();
+			return false;
+		});
 
 		$(".dashlet-action-edit").live("click", function() {
 			var dashlet = $(this).parents(".dashlet");
@@ -121,6 +128,23 @@
 
 			return false;
 		});
+		
+		$('div.dashlet').entwine({
+			refresh: function () {
+				var id = this.attr('data-id');
+				var reloadUrl = segment + '/loaddashlet';
+				this.loadUrl(reloadUrl, {DashletID: id});
+			},
+			loadUrl: function (reloadUrl, params) {
+				var _this = this;
+				$.get(reloadUrl, params, function (data) {
+					if (data && data.length && data.indexOf('dashlet') >= 0) {
+						_this.replaceWith(data);
+						delete _this;
+					}
+				})
+			}
+		})
 
 		$(window).unload(function() {
 			$.cookie("dashlets-collapsed", collapsed.join(","), { expires: 9999 });

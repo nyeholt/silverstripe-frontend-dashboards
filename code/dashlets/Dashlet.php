@@ -66,7 +66,7 @@ class Dashlet extends Widget {
 	}
 }
 
-class Dashlet_Controller extends Widget_Controller {
+class Dashlet_Controller extends WidgetController {
 	protected $parentDashboardPage = null;
 	
 	/**

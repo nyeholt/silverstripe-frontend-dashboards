@@ -1,7 +1,7 @@
 <div class="dashboard" data-id="$ID">
 	<% if WidgetControllers %>
-		<% control WidgetControllers %>
+		<% loop WidgetControllers %>
 			<% include DashletLayout %>
-		<% end_control %>
+		<% end_loop %>
 	<% end_if %>
 </div>

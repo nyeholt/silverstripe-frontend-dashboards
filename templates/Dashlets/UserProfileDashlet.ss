@@ -3,15 +3,13 @@
 	<div class="userProfile">
 	<% if Owner.Avatar %>
 	<% else %>
-	
 	<div class="gravatarImage">
 		<img src="http://www.gravatar.com/avatar/{$Owner.gravatarHash}.jpg" />
 	</div>
-		
 	<% end_if %>
 	
-	$Owner.Title
-
+	<p>$Owner.Title</p>
+	</div>
 <% else %>
 
 Please <a href="Security/login">login</a>

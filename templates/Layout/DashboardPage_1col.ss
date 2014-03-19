@@ -1,6 +1,6 @@
 
 <div id="DashboardLayout" class="$CurrentMember.ColumnLayout">
-	<div class="grid_16 dashboardContainer">
+	<div class="dashboardContainer">
 		$getDashboard(0)
 	</div>
 </div>
