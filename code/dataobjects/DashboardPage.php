@@ -93,10 +93,10 @@ class DashboardPage extends DataObject {
 	
 	public function getFrontEndFields($params = null) {
 		$fields = parent::getFrontEndFields($params);
+		
+		$fields->replaceField('Layout', $dd = DropdownField::create('Layout', null, self::$layouts));
+		$dd->setHasEmptyDefault(true);
 
-		$fields->replaceField('Layout', new DropdownField(
-			'Layout', null, self::$layouts, null, null, true
-		));
 
 		$fields->removeByName('InheritPerms');
 		$fields->removeByName('OwnerID');
