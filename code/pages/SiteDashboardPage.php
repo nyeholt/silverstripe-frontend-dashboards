@@ -64,4 +64,5 @@ class SiteDashboardPage_Controller extends DashboardController {
 			return $this->data()->Link($action ? $action : true);
 		}
 	}
+	
 }

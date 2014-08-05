@@ -8,13 +8,15 @@
  */
 class Dashlet extends Widget {
 	public static $db = array(
-		'Title'					=> 'Varchar'
+		'Title'					=> 'Varchar',
+		'Width'					=> 'Int',
+		'Height'				=> 'Int',
 	);
 
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		if (!$this->Title) {
-			$this->Title = Object::get_static($this->class, 'title');
+			$this->Title = Config::inst()->get($this->class, 'title');
 		}
 	}
 

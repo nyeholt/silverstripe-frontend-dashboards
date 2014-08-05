@@ -6,7 +6,7 @@
  */
 class DashboardUser extends DataExtension {
 	
-	public static $default_dashlets = array(
+	private static $default_dashlets = array(
 		
 	);
 	
@@ -60,7 +60,8 @@ class DashboardUser extends DataExtension {
 		$dashboard->write();
 		
 		if ($createDefault) {
-			foreach (self::$default_dashlets as $dbid => $dashlets) {
+			$defaults = Config::inst()->get('DashboardUser', 'default_dashlets');
+			foreach ($defaults as $dbid => $dashlets) {
 				foreach ($dashlets as $type) {
 					if (class_exists($type)) {
 						$dashlet = new $type;

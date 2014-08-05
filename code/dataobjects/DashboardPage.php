@@ -15,6 +15,7 @@
 class DashboardPage extends DataObject {
 
 	public static $layouts = array(
+		'dynamic'	=> 'Dynamic',
 		'1col'   => 'One Column',
 		'2colLW' => 'Two Columns - Left Wide',
 		'2colRW' => 'Two Columns - Right Wide',

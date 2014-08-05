@@ -24,35 +24,42 @@
 		}
 
 		var dialog = $("<div />").addClass("dashlet-dialog").hide().appendTo("body");
+//
+//		function helper() {
+//			return $("<div />").addClass("dashlet-drag ui-state-highlight").appendTo("body");
+//		}
+//
+//		function update(e, ui) {
+//			var dashboard = $(ui.item).parent(".dashboard");
+//			var id        = dashboard.data("id");
+//
+//			var ids = dashboard.find(".dashlet").map(function(i, el) {
+//				return $(el).data("id");
+//			});
+//
+//			$.post(segment + "/updateDashboard", { dashboard: id, 'order[]': ids.get() })
+//		}
+//
+//		$(".dashboard").each(function() {
+//			$(this).sortable({
+//				placeholder: "ui-state-highlight dashlet-placeholder",
+//				handle:      ".dashlet-title",
+//				connectWith: ".dashboard",
+//				tolerance:   "pointer",
+//				revert:      true,
+//				helper:      helper,
+//				update:      update
+//			});
+//		});
 
-		function helper() {
-			return $("<div />").addClass("dashlet-drag ui-state-highlight").appendTo("body");
-		}
+		var gridster = $(".gridster ul").gridster({
+			widget_margins: [10, 10],
+			widget_base_dimensions: [240, 240]
+		}).data('gridster');
 
-		function update(e, ui) {
-			var dashboard = $(ui.item).parent(".dashboard");
-			var id        = dashboard.data("id");
+//		var gridly = $('.dynamicgrid').gridly()
 
-			var ids = dashboard.find(".dashlet").map(function(i, el) {
-				return $(el).data("id");
-			});
-
-			$.post(segment + "/updateDashboard", { dashboard: id, 'order[]': ids.get() })
-		}
-
-		$(".dashboard").each(function() {
-			$(this).sortable({
-				placeholder: "ui-state-highlight dashlet-placeholder",
-				handle:      ".dashlet-title",
-				connectWith: ".dashboard",
-				tolerance:   "pointer",
-				revert:      true,
-				helper:      helper,
-				update:      update
-			});
-		});
-
-		$(".dashlet-action-toggle").live("click", function() {
+		$(document).on('click', ".dashlet-action-toggle", function() {
 			var link    = $(this);
 			var dashlet = link.parents(".dashlet");
 			var id      = dashlet.data("id");
@@ -69,15 +76,15 @@
 
 			return false;
 		});
-		
-		$('.dashlet-action-refresh').live('click', function (e) {
+
+		$(document).on('click', '.dashlet-action-refresh', function (e) {
 			e.preventDefault();
 			var dashlet = $(this).closest(".dashlet");
 			dashlet.refresh();
 			return false;
 		});
 
-		$(".dashlet-action-edit").live("click", function() {
+		$(document).on('click', ".dashlet-action-edit", function() {
 			var dashlet = $(this).parents(".dashlet");
 			var id      = dashlet.data("id");
 
@@ -116,7 +123,7 @@
 			return false;
 		});
 
-		$(".dashlet-action-delete").live("click", function() {
+		$(document).on('click', ".dashlet-action-delete", function() {
 			var dashlet = $(this).parents(".dashlet");
 			var id      = dashlet.data("id");
 

@@ -95,18 +95,26 @@ class DashboardController extends FrontendModelController {
 		// Requirements::javascript('dashboards/javascript/jquery-1.4.3.min.js');
 		// Requirements::javascript('dashboards/javascript/jquery-ui-1.8.5.custom.min.js');
 		
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+//		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		
+		Requirements::javascript('frontend-dashboards/javascript/jquery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/jquery-ui.js');
 		
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-form/jquery.form.js');
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');
 		Requirements::javascript('frontend-dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
+		
 		Requirements::javascript('frontend-dashboards/javascript/dashboards.js');
 
 		Requirements::javascript('frontend-dashboards/javascript/dashboard-dialogs.js');
 		Requirements::css('frontend-dashboards/css/dashboards.css');
-		Requirements::css('frontend-dashboards/css/dashlets.css');
+		
+		Requirements::javascript('frontend-dashboards/javascript/jquery.gridster.js');
+		Requirements::css('frontend-dashboards/css/jquery.gridster.css');
+//		Requirements::javascript('frontend-dashboards/javascript/jquery.gridly.js');
+//		Requirements::css('frontend-dashboards/css/jquery.gridly.css');
+
 	}
 
 	public static function set_allowed_dashlets($dashlets) {
@@ -446,5 +454,9 @@ class DashboardController extends FrontendModelController {
 		}
 		
 		return $this->dataRecord->Link($action);
+	}
+	
+	public function Footer() {
+		return $this->renderWith('DashboardFooter');
 	}
 }

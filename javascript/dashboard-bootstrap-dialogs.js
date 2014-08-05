@@ -58,7 +58,7 @@ window.SS = window.SS || {}
 		Dialog: { open: dialog, buttons: buttons }
 	});
 	
-	$(document).on('click', "[data-dialog]", function() {
+	$("[data-dialog]").live("click", function() {
 		var link = $(this);
 
 		var dialog = SS.Dialog.open(link.attr("href"), {
@@ -75,7 +75,7 @@ window.SS = window.SS || {}
 		return false;
 	})
 	
-	$(document).on('submit', ".ui-dialog form", function() {
+	$(".ui-dialog form").live("submit", function() {
 		var form   = $(this);
 		var dialog = form.parents(".ui-dialog-content");
 		
