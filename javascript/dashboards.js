@@ -54,7 +54,58 @@
 
 		var gridster = $(".gridster ul").gridster({
 			widget_margins: [10, 10],
-			widget_base_dimensions: [240, 240]
+			widget_base_dimensions: [120, 120],
+			avoid_overlapped_widgets: true,
+			resize: {
+				enabled: true,
+				handle_class: 'dashlet-resize', //Setting the class of the resize handle
+				stop: function(e, i, widget) {
+					/*
+					*	This function creates post requests for the resized object
+					*	and also every object that had its position changed.
+					*	The resized object, isn't classified as a changed object
+					*	hence why there are two separate posts, as we cannot loop
+					*	over just the $changed objects.
+					*/
+					$.post($(widget[0].firstElementChild).attr('data-link') + '/save', this.serialize($(widget))[0])
+					.done(function(data) {});
+
+					if(this.$changed.length > 0) {
+						for(var i = 0; i < $(this.$changed).length; i++) {
+							$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
+							.done(function() {});
+						}
+					}
+
+					/*
+					*	Using this as to clear out what objects are in a "changed" state
+					*	as we already have it saved to the database.
+					*	This is because the changed states persists across every
+					*	change regardless of if the object was actually changed
+					*	in that specific call.
+					*	Otherwise we'd be writing to the database when we didn't
+					*	need to because nothing had changed :)
+					*/
+					this.$changed = $([]);
+				}
+			},
+			draggable: {
+				stop: function(e, i) {
+					/*
+					*	If objects have changed position, cycle through all changed objects
+					*	and create post requests to update positions in the database.
+					*/
+					if(this.$changed.length > 0) {
+						for(var i = 0; i < $(this.$changed).length; i++) {
+							$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
+							.done(function() {});
+						}
+					}
+
+					//See above in resize.stop to see why we do this.
+					this.$changed = $([]);
+				}
+			}
 		}).data('gridster');
 
 //		var gridly = $('.dynamicgrid').gridly()
@@ -92,6 +143,25 @@
 
 			$.get(segment + "/editorfor", { "DashletID": id }, function(html) {
 				dialog.removeClass("dashlet-dialog-loading").html(html);
+
+				//Using jQuery ColorPicker
+				//Commented out for usage of HTML5 <input type='color' />
+				//Uncomment and follow the steps in /code/dashlets/Dashlet.php:getDashletFields()
+				/*dialog.find("form").children('fieldset').children('.dashlet-color').each(function() {
+					$(this).children('div').children('input').colorpicker({
+						autoOpen: false,
+						parts: ['map', 'bar', 'footer'],
+						layout:{
+							map: [0,0,1,1],
+							bar: [1,0,1,1]
+						},
+						part: {
+							map:{size:128},
+							bar:{size:128}
+						},
+						inlineFrame: false
+					});
+				});*/
 			});
 
 			var buttons = {

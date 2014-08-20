@@ -11,6 +11,11 @@ class Dashlet extends Widget {
 		'Title'					=> 'Varchar',
 		'Width'					=> 'Int',
 		'Height'				=> 'Int',
+		'PosX'					=> 'Int',
+		'PosY'					=> 'Int',
+		'FontColor'				=> 'Varchar(16)',
+		'BackgroundColor'		=> 'Varchar(16)',
+		'ExtraClasses'			=> 'MultiValueField'
 	);
 
 	public function onBeforeWrite() {
@@ -30,7 +35,23 @@ class Dashlet extends Widget {
 	 * @return FieldSet 
 	 */
 	public function getDashletFields() {
-		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')));
+		/**
+		*	if you want to use jQuery color picker instead of HTML5
+		*	<input type='color' />, uncomment out the lined which add
+		*	the extra class, and comment out the lines which are setting
+		*	the attribute to type => color
+		*/
+		$bkgColor = new TextField('BackgroundColor', 'Background Color');
+		//$bkgColor->addExtraClass('dashlet-color');
+		$fontColor = new TextField('FontColor', 'Font Color');
+		//$fontColor->addExtraClass('dashlet-color');
+
+		$bkgColor->setAttribute('type', 'color');
+		$fontColor->setAttribute('type', 'color');
+
+		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')),
+			$bkgColor,
+			$fontColor);
 		$this->extend('updateDashletFields', $fields);
 		return $fields;
 	}
@@ -70,6 +91,16 @@ class Dashlet extends Widget {
 
 class Dashlet_Controller extends WidgetController {
 	protected $parentDashboardPage = null;
+	public static $allowed_actions = array(
+		'save',
+		'savecolor'
+	);
+	static $url_handlers = array(
+		'widget/$ID',
+		'dashlet/$ID',
+		'widget/$ID/save',
+		'dashlet/$ID/save'
+	);
 	
 	/**
 	 * Store the page we were attached to
@@ -93,6 +124,23 @@ class Dashlet_Controller extends WidgetController {
 		return $this->renderWith($templates);
 	}
 	
+	/**
+	*	Called on every instance of resize.stop and draggable.stop in dashboards.js
+	*	Takes the parameters and saves them to dashlet of the ID given.
+	*	Values are automatically escaped.
+	*/
+	public function save() {
+		//Note : Gridster uses weird names... size_x? Why just not width, Argh...
+		//			Admittedly, col and row makes sense since it's essentially
+		//			using cells to align up objects.
+		$obj = self::get()->byID($this->request->param('ID'));
+		$obj->PosX = $this->request->postVar('col');
+		$obj->PosY = $this->request->postVar('row');
+		$obj->Width = $this->request->postVar('size_x');
+		$obj->Height = $this->request->postVar('size_y');
+		$obj->write();
+	}
+
 	/**
 	 * Overridden to avoid infinite loop bug if $this === Controller::curr()
 	 */

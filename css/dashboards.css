@@ -9,7 +9,7 @@ ul {
 .dashlet {
 	margin-bottom: 10px;
 
-	background-image: -webkit-linear-gradient(#020202, #101112 40%, #191b1d);
+	/*background-image: -webkit-linear-gradient(#020202, #101112 40%, #191b1d);
 	background-image: linear-gradient(#020202, #101112 40%, #191b1d);
 	background-repeat: no-repeat;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff020202', endColorstr='#ff191b1d', GradientType=0);
@@ -18,9 +18,13 @@ ul {
 	
 	border-radius: 10px;
 	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
+	-webkit-border-radius: 10px;*/
+	height:inherit;
+
+	background:#900;
 	
 	box-shadow: 0px 0px 10px #111;
+	overflow:auto;
 }
 
 .dashlet-title {
@@ -62,6 +66,22 @@ ul {
 	/*background-color: #CCC;*/
 }
 
+.dashlet-color-table {
+	background:#FFF;
+	padding:0;
+}
+
+.dashlet-color-table td {
+	padding:5px;
+	border:1px solid #777;
+	background:#FFF;
+	color:#777;
+}
+
+.dashlet-color-table input {
+	margin:0;
+}
+
 .dashlet-placeholder {
 	height: 34px;
 	margin-bottom: 10px;
@@ -80,12 +100,33 @@ ul {
 }
 
 
-  .brick.small {
-    width: 140px;
-    height: 140px;
-  }
+.brick.small {
+	width: 140px;
+	height: 140px;
+}
 
-  .brick.large {
-    width: 300px;
-    height: 300px;
-  }
+.brick.large {
+	width: 300px;
+	height: 300px;
+}
+
+.dashlet-footer {
+	width:auto;
+	height:16px;
+}
+
+.dashlet-resize {
+	width:16px;
+	height:16px;
+	background:#CCC;
+	bottom:0px;
+	right:0px;
+	cursor:se-resize;
+	background-position:top left;
+	background-repeat:no-repeat;
+	position:absolute;
+}
+
+nav {
+	z-index:9999;
+}
