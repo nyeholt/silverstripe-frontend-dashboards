@@ -1,4 +1,4 @@
-<div class="dashlet $ClassName $FirstLast" data-id="$ID" data-link="$Link" style="background-color:$BackgroundColor; color:#$FontColor">
+<div class="dashlet $ClassName $FirstLast" data-id="$ID" data-link="$Link" style="background-color:$BackgroundColor; color:$FontColor">
 	<div class="dashlet-title">
 		<div class="dashlet-title-actions">
 			<a href="#" class="dashlet-action-refresh ui-icon ui-icon-refresh"></a>
