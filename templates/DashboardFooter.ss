@@ -5,8 +5,7 @@
 
 					<div class="btn-group dropup">
 						
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Dashboard</button>
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Dashboard
 							<span class="caret"></span>
 							<span class="sr-only">Toggle Dropdown</span>
 						</button>

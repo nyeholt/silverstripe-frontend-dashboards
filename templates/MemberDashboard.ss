@@ -2,7 +2,7 @@
 	<ul>
 		<% if WidgetControllers %>
 		<% loop WidgetControllers %>
-		<li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+		<li data-row="$PosY" data-col="$PosX" data-sizex="$Width" data-sizey="$Height">
 			<% include DashletLayout %>
 		</li>
 		<% end_loop %>

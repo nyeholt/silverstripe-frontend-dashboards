@@ -106,6 +106,8 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript('frontend-dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
 		
 		Requirements::javascript('frontend-dashboards/javascript/dashboards.js');
+//		Requirements::javascript('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.js');
+//		Requirements::css('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.css');
 
 		Requirements::javascript('frontend-dashboards/javascript/dashboard-dialogs.js');
 		Requirements::css('frontend-dashboards/css/dashboards.css');
@@ -404,7 +406,7 @@ class DashboardController extends FrontendModelController {
 		if ($dashlet->checkPerm('Write')) {
 			$form->saveInto($dashlet);
 			$dashlet->write();
-			
+
 			return $this->loaddashlet();
 		}
 	}
@@ -430,9 +432,8 @@ class DashboardController extends FrontendModelController {
 		if (class_exists($controller)) {
 			$renderObj = $this->injector->create($controller, $dashlet, $this);
 		}
-		
+
 		return $renderObj->renderWith('DashletLayout');
-		return $dashlet->renderWith(array_reverse(ClassInfo::ancestry($dashlet->class)));
 	}
 	
 	protected function getRequestedDashlet() {
