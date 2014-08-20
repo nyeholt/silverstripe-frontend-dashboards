@@ -24,6 +24,7 @@ class Dashlet extends Widget {
 		'Height'		=> 1,
 		'PosX'			=> 1,
 		'PosY'			=> 1,
+		'InheritColors'	=> 1,
 	);
 	
 	public function onBeforeWrite() {
@@ -63,14 +64,24 @@ class Dashlet extends Widget {
 
 		$bkgColor->setAttribute('type', 'color');
 		$fontColor->setAttribute('type', 'color');
+		
+		$extraClasses = MultiValueTextField::create('ExtraClasses');
 
 		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')),
+			$extraClasses,
 			$bkgColor,
 			$fontColor,
 			$inherit
 		);
 		$this->extend('updateDashletFields', $fields);
 		return $fields;
+	}
+	
+	public function ExtraDashletClasses() {
+		$classes = $this->ExtraClasses->getValues();
+		if ($classes && count($classes)) {
+			return implode(' ' , $classes);
+		}
 	}
 
 	public function permissionSource() {

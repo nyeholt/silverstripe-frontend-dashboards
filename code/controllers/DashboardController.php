@@ -105,6 +105,8 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');
 		Requirements::javascript('frontend-dashboards/thirdparty/jquery-cookie/jquery.cookie.js');
 		
+		Requirements::javascript(FRAMEWORK_DIR . '/javascript/jquery-ondemand/jquery.ondemand.js');
+		
 		Requirements::javascript('frontend-dashboards/javascript/dashboards.js');
 //		Requirements::javascript('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.js');
 //		Requirements::css('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.css');
