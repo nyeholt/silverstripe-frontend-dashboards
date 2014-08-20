@@ -7,7 +7,7 @@
  * @license BSD License http://silverstripe.org/bsd-license/
  */
 class Dashlet extends Widget {
-	public static $db = array(
+	private static $db = array(
 		'Title'					=> 'Varchar',
 		'Width'					=> 'Int',
 		'Height'				=> 'Int',
@@ -15,13 +15,26 @@ class Dashlet extends Widget {
 		'PosY'					=> 'Int',
 		'FontColor'				=> 'Varchar(16)',
 		'BackgroundColor'		=> 'Varchar(16)',
+		'InheritColors'			=> 'Boolean',
 		'ExtraClasses'			=> 'MultiValueField'
 	);
 
+	private static $defaults = array(
+		'Width'			=> 1,
+		'Height'		=> 1,
+		'PosX'			=> 1,
+		'PosY'			=> 1,
+	);
+	
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		if (!$this->Title) {
 			$this->Title = Config::inst()->get($this->class, 'title');
+		}
+		
+		if ($this->InheritColors) {
+			$this->FontColor = '';
+			$this->BackgroundColor = '';
 		}
 	}
 
@@ -41,9 +54,11 @@ class Dashlet extends Widget {
 		*	the extra class, and comment out the lines which are setting
 		*	the attribute to type => color
 		*/
-		$bkgColor = new TextField('BackgroundColor', 'Background Color');
+		$bkgColor = new TextField('BackgroundColor', _t('Dashlets.BGCOLOR', 'Background Color'));
 		//$bkgColor->addExtraClass('dashlet-color');
-		$fontColor = new TextField('FontColor', 'Font Color');
+		$fontColor = new TextField('FontColor', _t('Dashlets.FGCOLOR', 'Foreground Color'));
+		
+		$inherit = CheckboxField::create('InheritColors', _t('Dashlets.INHERIT_COLOURS', 'Inherit Color'));
 		//$fontColor->addExtraClass('dashlet-color');
 
 		$bkgColor->setAttribute('type', 'color');
@@ -51,7 +66,9 @@ class Dashlet extends Widget {
 
 		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')),
 			$bkgColor,
-			$fontColor);
+			$fontColor,
+			$inherit
+		);
 		$this->extend('updateDashletFields', $fields);
 		return $fields;
 	}

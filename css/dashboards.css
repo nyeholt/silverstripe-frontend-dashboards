@@ -20,8 +20,8 @@ ul {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;*/
 	height:inherit;
-
-	background:#900;
+	
+	background-color: #fcfcfc;
 	
 	box-shadow: 0px 0px 10px #111;
 	overflow:auto;
@@ -119,6 +119,7 @@ ul {
 	width:16px;
 	height:16px;
 	background:#CCC;
+	opacity: 0.1;
 	bottom:0px;
 	right:0px;
 	cursor:se-resize;
