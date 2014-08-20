@@ -92,8 +92,7 @@ class Dashlet extends Widget {
 class Dashlet_Controller extends WidgetController {
 	protected $parentDashboardPage = null;
 	public static $allowed_actions = array(
-		'save',
-		'savecolor'
+		'save'
 	);
 	static $url_handlers = array(
 		'widget/$ID',
