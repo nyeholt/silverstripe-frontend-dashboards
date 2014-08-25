@@ -90,6 +90,7 @@
 				}
 			},
 			draggable: {
+				handle: '.dashlet-title h3',
 				stop: function(e, i) {
 					/*
 					*	If objects have changed position, cycle through all changed objects
