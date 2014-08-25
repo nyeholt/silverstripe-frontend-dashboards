@@ -89,13 +89,7 @@ class DashboardController extends FrontendModelController {
 			}
 		}
 		
-
-		// add the following to your own page init() to ensure requirements
-		// are met - but you're likely to have them anyway.
-		// Requirements::javascript('dashboards/javascript/jquery-1.4.3.min.js');
-		// Requirements::javascript('dashboards/javascript/jquery-ui-1.8.5.custom.min.js');
-		
-//		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
 		
 		Requirements::javascript('frontend-dashboards/javascript/jquery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/jquery-ui.js');
@@ -108,8 +102,6 @@ class DashboardController extends FrontendModelController {
 		Requirements::javascript(FRAMEWORK_DIR . '/javascript/jquery-ondemand/jquery.ondemand.js');
 		
 		Requirements::javascript('frontend-dashboards/javascript/dashboards.js');
-//		Requirements::javascript('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.js');
-//		Requirements::css('frontend-dashboards/thirdparty/colorpicker/jquery.colorpicker.css');
 
 		Requirements::javascript('frontend-dashboards/javascript/dashboard-dialogs.js');
 		Requirements::css('frontend-dashboards/css/dashboards.css');
