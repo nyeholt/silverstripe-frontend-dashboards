@@ -119,10 +119,10 @@ class Dashlet extends Widget {
 
 class Dashlet_Controller extends WidgetController {
 	protected $parentDashboardPage = null;
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'save'
 	);
-	static $url_handlers = array(
+	private static $url_handlers = array(
 		'widget/$ID',
 		'dashlet/$ID',
 		'widget/$ID/save',
