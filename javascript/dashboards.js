@@ -52,7 +52,7 @@
 //			});
 //		});
 
-		var gridster = $(".gridster ul").gridster({
+		var gridster = $(".gridster ul.grid-container").gridster({
 			widget_margins: [10, 10],
 			widget_base_dimensions: [120, 120],
 			avoid_overlapped_widgets: true,

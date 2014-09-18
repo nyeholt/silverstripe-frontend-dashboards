@@ -1,5 +1,5 @@
 <div class="gridster" style="position: relative;">
-	<ul>
+	<ul class="grid-container">
 		<% if WidgetControllers %>
 		<% loop WidgetControllers %>
 		<li data-row="$PosY" data-col="$PosX" data-sizex="$Width" data-sizey="$Height">
