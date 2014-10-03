@@ -31,8 +31,8 @@ class DashboardController extends FrontendModelController {
 	);
 
 	private static $allowed_dashlets = array();
-	
-	public static $dependencies = array(
+
+	private static $dependencies = array(
 		'injector'				=> '%$Injector', 
 		'securityContext'		=> '%$SecurityContext',
 		'dataService'			=> '%$DataService',
@@ -56,7 +56,7 @@ class DashboardController extends FrontendModelController {
 		if (!count(self::$allowed_dashlets)) {
 			$widgets = ClassInfo::subclassesFor('Dashlet');
 			array_shift($widgets);
-			self::$allowed_dashlets = array_combine($widgets, $widgets);
+			self::$allowed_dashlets = array_values($widgets); // array_combine($widgets, $widgets);
 		}
 
 		parent::__construct($page);
@@ -219,13 +219,13 @@ class DashboardController extends FrontendModelController {
 				unset(self::$allowed_dashlets[$cls]);
 			}
 		}
-		
+
 		$dashlets = self::$allowed_dashlets;
-		
+
 		$keys = array_keys($dashlets);
 		if (count($keys) && is_int($keys[0])) {
 			foreach (array_values($dashlets) as $dashletClass) {
-				$title = Object::get_static($dashletClass, 'title');
+				$title = Config::inst()->get($dashletClass, 'title');
 				if (!$title) {
 					FormField::name_to_label($dashletClass);
 				}

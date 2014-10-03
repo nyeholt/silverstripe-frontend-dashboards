@@ -20,8 +20,8 @@ class Dashlet extends Widget {
 	);
 
 	private static $defaults = array(
-		'Width'			=> 1,
-		'Height'		=> 1,
+		'Width'			=> 3,
+		'Height'		=> 2,
 		'PosX'			=> 1,
 		'PosY'			=> 1,
 		'InheritColors'	=> 1,
