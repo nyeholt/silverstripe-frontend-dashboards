@@ -75,6 +75,8 @@ class DashboardUser extends DataExtension {
 			}
 
 			$dashboard = $this->getNamedDashboard($url);
+			
+			$this->owner->extend('updateCreatedDashboard', $dashboard);
 		}
 		return $dashboard;
 	}

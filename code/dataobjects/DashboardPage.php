@@ -16,13 +16,13 @@ class DashboardPage extends DataObject {
 
 	public static $layouts = array(
 		'dynamic'	=> 'Dynamic',
-		'1col'   => 'One Column',
-		'2colLW' => 'Two Columns - Left Wide',
-		'2colRW' => 'Two Columns - Right Wide',
-		'3col'   => 'Three Columns'
+//		'1col'   => 'One Column',
+//		'2colLW' => 'Two Columns - Left Wide',
+//		'2colRW' => 'Two Columns - Right Wide',
+//		'3col'   => 'Three Columns'
 	);
 
-	public static $default_layout = '2colLW';
+	public static $default_layout = 'dynamic';
 
 	public static $max_dashboards = 3;
 	public static $db = array(
@@ -32,7 +32,7 @@ class DashboardPage extends DataObject {
 	);
 	
 	public static $defaults = array(
-		'ColumnLayout'			=> '2colRW'
+		'ColumnLayout'			=> 'dynamic'
 	);
 
 	public static $has_many = array(
