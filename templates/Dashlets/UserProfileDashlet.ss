@@ -9,6 +9,9 @@
 	<% end_if %>
 	
 	<p>$Owner.Title</p>
+
+	$UpdateForm
+
 	</div>
 <% else %>
 
