@@ -46,6 +46,9 @@ class DashboardController extends FrontendModelController {
 	 */
 	public $dataService;
 	
+	/**
+	 * @var DashboardPage
+	 */
 	protected $currentDashboard;
 
 	public function __construct($page=null, $dashboard=null) {
@@ -360,8 +363,8 @@ class DashboardController extends FrontendModelController {
 			if (!$dashlet->canCreate()) {
 				throw new PermissionDeniedException('CreateChildren');
 			}
-			$dashlet->ParentID = $this->currentDashboard->getDashboard(0)->ID;
-			$dashlet->write();
+			$dashboard = $this->currentDashboard->getDashboard(0);
+			$dashboard->addDashlet($dashlet);
 		}
 		
 		//return $this->redirect($this->currentDashboard->Link());

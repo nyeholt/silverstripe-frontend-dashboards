@@ -16,6 +16,24 @@ class MemberDashboard extends WidgetArea {
 	public static $extensions = array(
 		'Restrictable'
 	);
+	
+	public function addDashlet(Dashlet $dashlet) {
+		$dashlet->ParentID = $this->ID;
+		
+		// get all dashlets and figure out a posX and posY
+		$all = $this->Widgets();
+		
+		$maxY = 0;
+
+		foreach ($all as $d) {
+			if ($d->PosY > $maxY) {
+				$maxY = $d->PosY + 1;
+			}
+		}
+		
+		$dashlet->PosY = $maxY > 1 ? $maxY : 1;
+		$dashlet->write();
+	}
 
 	public function WidgetControllers() {
 		$set   = new ArrayList();
