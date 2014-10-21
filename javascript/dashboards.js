@@ -108,6 +108,9 @@
 				}
 			}
 		}).data('gridster');
+		
+		// prevent selection of content
+		$(document).on('mousedown', '.dashlet-title h3', function (e) { e.preventDefault(); });
 
 //		var gridly = $('.dynamicgrid').gridly()
 
@@ -221,6 +224,21 @@
 						delete _this;
 					}
 				})
+			}
+		})
+		
+		$('div.dashlet form.ajax-form').entwine({
+			onsubmit: function (e) {
+				var parentDiv = $(this).parents('div.dashlet');
+				parentDiv.css('opacity', '0.5');
+				$(this).ajaxSubmit({
+					success: function(replace) {
+						parentDiv.refresh();
+						parentDiv.css('opacity', '1.0');
+					}
+				});
+				
+				return false;
 			}
 		})
 
