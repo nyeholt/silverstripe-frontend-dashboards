@@ -13,9 +13,6 @@ class Dashlet extends Widget {
 		'Height'				=> 'Int',
 		'PosX'					=> 'Int',
 		'PosY'					=> 'Int',
-		'FontColor'				=> 'Varchar(16)',
-		'BackgroundColor'		=> 'Varchar(16)',
-		'InheritColors'			=> 'Boolean',
 		'ExtraClasses'			=> 'MultiValueField'
 	);
 
@@ -24,18 +21,12 @@ class Dashlet extends Widget {
 		'Height'		=> 2,
 		'PosX'			=> 1,
 		'PosY'			=> 1,
-		'InheritColors'	=> 1,
 	);
-	
+
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
 		if (!$this->Title) {
 			$this->Title = Config::inst()->get($this->class, 'title');
-		}
-		
-		if ($this->InheritColors) {
-			$this->FontColor = '';
-			$this->BackgroundColor = '';
 		}
 	}
 
@@ -55,24 +46,10 @@ class Dashlet extends Widget {
 		*	the extra class, and comment out the lines which are setting
 		*	the attribute to type => color
 		*/
-		$bkgColor = new TextField('BackgroundColor', _t('Dashlets.BGCOLOR', 'Background Color'));
-		//$bkgColor->addExtraClass('dashlet-color');
-		$fontColor = new TextField('FontColor', _t('Dashlets.FGCOLOR', 'Foreground Color'));
-		
-		$inherit = CheckboxField::create('InheritColors', _t('Dashlets.INHERIT_COLOURS', 'Inherit Color'));
-		//$fontColor->addExtraClass('dashlet-color');
-
-		$bkgColor->setAttribute('type', 'color');
-		$fontColor->setAttribute('type', 'color');
 		
 		$extraClasses = MultiValueTextField::create('ExtraClasses');
 
-		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')),
-			$extraClasses,
-			$bkgColor,
-			$fontColor,
-			$inherit
-		);
+		$fields = new FieldList(new TextField('Title', _t('Dashlet.TITLE', 'Title')), $extraClasses);
 		$this->extend('updateDashletFields', $fields);
 		return $fields;
 	}
