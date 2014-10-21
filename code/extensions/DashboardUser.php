@@ -6,9 +6,9 @@
  */
 class DashboardUser extends DataExtension {
 	
-	private static $default_dashlets = array(
-		
-	);
+	private static $default_dashlets = array();
+	
+	private static $default_layout = array();
 	
 	public $dataService;
 	public $securityContext;
@@ -61,13 +61,34 @@ class DashboardUser extends DataExtension {
 		
 		if ($createDefault) {
 			$defaults = Config::inst()->get('DashboardUser', 'default_dashlets');
-			foreach ($defaults as $dbid => $dashlets) {
-				foreach ($dashlets as $type) {
+			/* @deprecated Please use the default_layout */
+			if (count($defaults)) {
+				foreach ($defaults as $dbid => $dashlets) {
+					foreach ($dashlets as $type) {
+						if (class_exists($type)) {
+							$dashlet = new $type;
+							$db = $dashboard->getDashboard($dbid);
+							if ($db && $dashlet->canCreate()) {
+								$dashlet->ParentID = $db->ID;
+								$dashlet->write();
+							}
+						}
+					}
+				}
+			}
+			
+			$layout = Config::inst()->get('DashboardUser', 'default_layout');
+			if (count($layout)) {
+				foreach ($layout as $type => $properties) {
 					if (class_exists($type)) {
 						$dashlet = new $type;
-						$db = $dashboard->getDashboard($dbid);
+						/* @var $dashlet Dashlet */
+						$db = $dashboard->getDashboard(0);
 						if ($db && $dashlet->canCreate()) {
 							$dashlet->ParentID = $db->ID;
+							if (is_array($properties)) {
+								$dashlet->update($properties);
+							}
 							$dashlet->write();
 						}
 					}
