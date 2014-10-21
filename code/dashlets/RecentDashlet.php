@@ -26,16 +26,23 @@ class RecentDashlet extends Dashlet {
 	
 	public function getDashletFields() {
 		$fields = parent::getDashletFields();
-		$types = ClassInfo::subclassesFor('Page');
-		$types = array_combine($types, $types);
-		ksort($types);
-		$fields->push(new DropdownField('ListType', _t('RecentDashlet.LIST_TYPE', 'List Items of Type'), $types));
+		if (Permission::check('ADMIN')) {
+			$types = ClassInfo::subclassesFor('Page');
+			$types = array_combine($types, $types);
+			ksort($types);
+			$fields->push(new DropdownField('ListType', _t('RecentDashlet.LIST_TYPE', 'List Items of Type'), $types));
+		}
+		
 		return $fields;
 	}
 
 	public function Items() {
-		if ($this->ListType) {
-			return singleton('DataService')->getAll($this->ListType, $filter = "", $sort = "LastEdited DESC", $join = "", $limit = "0, 10");
+		$type = 'Page';
+		if (Permission::check('ADMIN')) {
+			$type = $this->ListType ? $this->ListType : 'Page';
+		}
+		if ($type) {
+			return singleton('DataService')->getAll($type, $filter = "", $sort = "LastEdited DESC", $join = "", $limit = "0, 10");
 		}
 	}
 }
