@@ -428,6 +428,7 @@ class DashboardController extends FrontendModelController {
 		$renderObj = $dashlet;
 		if (class_exists($controller)) {
 			$renderObj = $this->injector->create($controller, $dashlet, $this);
+			$renderObj->init();
 		}
 
 		return $renderObj->renderWith('DashletLayout');
