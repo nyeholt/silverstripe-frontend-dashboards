@@ -2,20 +2,27 @@
 window.SS = window.SS || {}
 
 ;(function($) {
+	
 	var dialog = function(url, opts) {
 		var defaults = {
 			width:     400,
 			height:    400,
 			modal:     true,
 			draggable: false,
-			resizable: false
+			resizable: false,
+			close: function (e) {
+				if (SS.currentDialog) {
+					SS.currentDialog.remove();
+					delete SS.currentDialog;
+				}
+			}
 		};
 
 		var dialog  = $("<div class='dialog-loading'></div>");
 		var options = $.extend({}, defaults, opts);
 		
-		if ($('.ui-dialog-content').length) {
-			$(".ui-dialog-content").dialog("close").dialog("destroy");
+		if ($('.ui-dialog').length) {
+			$(".ui-dialog").dialog("close").dialog("destroy");
 		}
 		dialog.dialog(options);
 		
@@ -32,6 +39,8 @@ window.SS = window.SS || {}
 			}
 		});
 		
+		SS.currentDialog = dialog;
+
 		return dialog;
 	};
 
