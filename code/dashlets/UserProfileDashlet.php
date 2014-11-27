@@ -17,7 +17,7 @@ class UserProfileDashlet extends Dashlet {
 
 class UserProfileDashlet_Controller extends Dashlet_Controller {
 	public function UpdateForm() {
-		$member = Member::currentUser();
+		$member = singleton('SecurityContext')->getMember(); 
 		if (!$member) {
 			return '';
 		}
