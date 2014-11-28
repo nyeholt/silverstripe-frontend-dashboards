@@ -67,7 +67,12 @@ window.SS = window.SS || {}
 		Dialog: { open: dialog, buttons: buttons }
 	});
 	
-	$(document).on('click', "[data-dialog]", function() {
+	$(document).on('click', "[data-dialog]", function(e) {
+		
+		if (e.shiftKey) {
+			return false;
+		}
+		
 		var link = $(this);
 
 		var dialog = SS.Dialog.open(link.attr("href"), {
