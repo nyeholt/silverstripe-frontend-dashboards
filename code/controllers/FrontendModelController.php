@@ -67,6 +67,10 @@ class FrontendModelController extends Page_Controller {
 			Security::permissionFailure($this, "You must be logged in");
 			return;
 		}
+		if ($this->record && !$this->record->canEdit()) {
+			Security::permissionFailure($this, "You must be logged in to edit that");
+			return;
+		}
 		if($this->request->isAjax()) {
 			return $this->Form()->forAjaxTemplate();
 		} else {
@@ -129,13 +133,17 @@ class FrontendModelController extends Page_Controller {
 			$this->record = new $cls;
 		}
 
+		if (!$this->record->canEdit()) {
+			return $this->httpError(403);
+		}
+
 		$form->saveInto($this->record);
 		$this->record->write();
 
 		//$this->redirect($this->record->Link());
 		$this->redirectBack();
 	}
-	
+
 	public function Record() {
 		return $this->record;
 	}

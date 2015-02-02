@@ -407,7 +407,7 @@ class DashboardController extends FrontendModelController {
 			return $this->loaddashlet();
 		}
 	}
-	
+
 	public function deletedashlet($data, Form $form) {
 		$dashlet = $this->getRequestedDashlet();
 
