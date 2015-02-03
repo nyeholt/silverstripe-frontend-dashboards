@@ -91,7 +91,7 @@ class DashboardController extends FrontendModelController {
 				return;
 			}
 		}
-		
+
 		Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
 
 		Requirements::javascript('frontend-dashboards/javascript/jquery-1.10.2.min.js');

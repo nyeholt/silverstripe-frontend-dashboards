@@ -29,11 +29,8 @@ class FrontendModelController extends Page_Controller {
 	}
 
 	public function index() {
-		$company = Member::currentUser()->CompanyID;
-		if ($company) {
-			$this->redirect('company/view/'.$company);
-		} else {
-			$this->redirect('');
+		if (!$this->redirectedTo()) {
+			return $this->redirect('');
 		}
 	}
 	
