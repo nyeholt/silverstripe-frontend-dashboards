@@ -75,6 +75,13 @@ class DashboardPage extends DataObject {
 		if ($this->isChanged('URLSegment')) {
 			$this->URLSegment = URLSegmentFilter::create()->filter($this->URLSegment);
 		}
+		
+		if (!$this->URLSegment) {
+			$this->URLSegment = URLSegmentFilter::create()->filter($this->Title);
+		}
+		if (!$this->URLSegment) {
+			$this->URLSegment = 'main';
+		}
 	}
 
 	public function onAfterWrite() {
