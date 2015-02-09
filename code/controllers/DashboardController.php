@@ -55,11 +55,13 @@ class DashboardController extends FrontendModelController {
 		if ($dashboard && $dashboard instanceof DashboardPage) {
 			$this->currentDashboard = $dashboard;
 		}
+		
+		$dashlets = Config::inst()->get('DashboardController', 'allowed_dashlets');
 
-		if (!count(self::$allowed_dashlets)) {
+		if (!count($dashlets)) {
 			$widgets = ClassInfo::subclassesFor('Dashlet');
 			array_shift($widgets);
-			self::$allowed_dashlets = array_values($widgets); // array_combine($widgets, $widgets);
+			Config::inst()->update('DashboardController', 'allowed_dashlets', array_values($widgets));
 		}
 
 		parent::__construct($page);
@@ -116,13 +118,14 @@ class DashboardController extends FrontendModelController {
 	}
 
 	public static function set_allowed_dashlets($dashlets) {
+		Config::inst()->update('DashboardController', 'allowed_dashlets', $dashlets);
 		self::$allowed_dashlets = $dashlets;
 	}
 
 	protected $allowedDashlets = null;
 	
 	public static function get_allowed_dashlets() {
-		return self::$allowed_dashlets;
+		return Config::inst()->get('DashboardController', 'allowed_dashlets');
 	}
 	
 	public function handleUser($request) {
@@ -212,17 +215,17 @@ class DashboardController extends FrontendModelController {
 		if ($this->allowedDashlets) {
 			return $this->allowedDashlets;
 		}
+		
+		$dashlets = self::get_allowed_dashlets();
 
 		// prune any that have specific requirements
-		foreach (self::$allowed_dashlets as $cls => $title) {
+		foreach ($dashlets as $cls => $title) {
 			$clazz = is_int($cls) ? $title : $cls;
 			$dummy = singleton($clazz);
 			if (!$dummy->canCreate()) {
-				unset(self::$allowed_dashlets[$cls]);
+				unset($dashlets[$cls]);
 			}
 		}
-
-		$dashlets = self::$allowed_dashlets;
 
 		$keys = array_keys($dashlets);
 		if (count($keys) && is_int($keys[0])) {
@@ -234,7 +237,7 @@ class DashboardController extends FrontendModelController {
 				$this->allowedDashlets[$dashletClass] = $title; 
 			}
 		} else {
-			$this->allowedDashlets = self::$allowed_dashlets;
+			$this->allowedDashlets = $dashlets;
 		}
 		
 		return $this->allowedDashlets;
