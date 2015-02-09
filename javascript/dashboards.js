@@ -1,5 +1,7 @@
 ;(function($) {
 	$(function () {
+		var SMALL_BREAK_POINT = 640;
+		
 		var segment = 'dashboard';
 		if ($('#DashboardUrl').length) {
 			segment = $('#DashboardUrl').val();
@@ -108,6 +110,59 @@
 				}
 			}
 		}).data('gridster');
+		
+		
+		var enableSmallScreenGrid = function () {
+			console.log("Small screen enabled");
+			gridster.$el.data('original_width', gridster.container_width);
+			
+			gridster.$el.css('width', 'auto');
+			
+			// remove position absolute
+			gridster.$el.find('.gs-w').addClass('small-screen');
+			gridster.remove_style_tags();
+			gridster.disable();
+		};
+		
+		var enableLargeScreenGrid = function () {
+			var setTo = SMALL_BREAK_POINT > gridster.$el.data('original_width') ? SMALL_BREAK_POINT : gridster.$el.data('original_width');
+			setTo = Math.max(setTo, gridster.$el.width())
+			
+			console.log("Setting el to " + setTo);
+			
+			gridster.$el.css('width', gridster.$el.width());
+			gridster.$el.css('width', setTo);
+			gridster.$el.find('.gs-w.small-screen').removeClass('small-screen');
+			gridster.generate_grid_and_stylesheet();
+			gridster.enable();
+		};
+		
+		var checkWindowSize = function () {
+			if ($(window).width() < SMALL_BREAK_POINT) {
+				if (!gridster.is_disabled) {
+					gridster.is_disabled = true;
+					enableSmallScreenGrid();
+				}
+			} else {
+				if (gridster.is_disabled) {
+					gridster.is_disabled = false;
+					enableLargeScreenGrid();
+				}
+			}
+		}
+		
+		setTimeout(checkWindowSize, 100);
+		
+		var resizeCheckTimeout = null;
+		
+		$(window).on('resize', function (e) {
+			if (resizeCheckTimeout) {
+				clearTimeout(resizeCheckTimeout);
+			}
+			resizeCheckTimeout = setTimeout(checkWindowSize, 200);
+		});
+		
+		
 		
 		// prevent selection of content
 		$(document).on('mousedown', '.dashlet-title h3', function (e) { e.preventDefault(); });

@@ -9,6 +9,7 @@
 
 <div class="actions-panel">
 	<div id="header-buttons" class="actions-items">
+		
 		<a href="$Link(adddashlet)" data-width="340" data-height="200" data-dialog="dialog">
 			<span class="glyphicon glyphicon-plus-sign"></span>
 			<span>Dashlets</span>

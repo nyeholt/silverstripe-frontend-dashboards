@@ -131,3 +131,38 @@ ul {
 nav {
 	z-index:9999;
 }
+
+
+.typography #DashboardLayout ul li {
+	list-style-type: none !important;
+	margin-bottom: 0;
+}
+
+
+.gridster .gs-w.small-screen {
+	position: static;
+}
+/*
+@media only screen and (max-width: 640px) {
+	.dashlet {
+		width: 100px;
+		heigt: 100px;
+	}
+	
+	ul.grid-container li {
+		float: left;
+		margin-right: 20px;
+	}
+	
+	.dashlet-title, .dashlet-content {
+		display: none;
+	}
+	
+	*[data-sizex] {
+		width: 100px !important;
+	}
+	
+	*[data-sizey] {
+		height: 100px !important;
+	}
+}*/
