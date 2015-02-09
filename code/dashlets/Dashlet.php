@@ -85,11 +85,25 @@ class Dashlet extends Widget {
 	 * @return type 
 	 */
 	public function canCreate($member=null) {
-		$config = SiteConfig::current_site_config();
-		$required = $this->requiredPermission();
-		if ($config->hasMethod('checkPerm') && $config->checkPerm($required)) {
-			return true;
+		if (!$member) {
+			$member = singleton('SecurityContext')->getMember();
 		}
+		
+		if ($member) {
+			// check dashboard controller's allowed_dashlets
+			$allowed = Config::inst()->get('DashboardController', 'allowed_dashlets');
+			if (in_array(get_class($this), $allowed)) {
+				return true;
+			}
+			
+			$config = SiteConfig::current_site_config();
+			$required = $this->requiredPermission();
+			if ($config->hasMethod('checkPerm') && $config->checkPerm($required)) {
+				return true;
+			}
+		}
+		
+		
 		return parent::canCreate($member);
 	}
 }
