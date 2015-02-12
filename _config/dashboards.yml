@@ -1,0 +1,10 @@
+---
+Name: default_dashboards
+---
+DashboardUser:
+  default_layout:
+    UserProfileDashlet:
+      PosX: 1
+      PosY: 1
+      Width: 3
+      Height: 2
