@@ -27,12 +27,38 @@ class UserProfileDashlet_Controller extends Dashlet_Controller {
 			$filter = array('SiteID' => Multisites::inst()->getCurrentSiteId());
 		}
 		
+		// use member profile page if possible
 		$profilePage = MemberProfilePage::get()->filter($filter)->first();
 		if ($profilePage) {
 			$controller = MemberProfilePage_Controller::create($profilePage);
 			$form = $controller->ProfileForm();
 			$form->addExtraClass('ajax-form');
 			$form->loadDataFrom($member);
+			return $form;
+		} else {
+			$password = new ConfirmedPasswordField (
+				'Password',
+				$member->fieldLabel('Password'),
+				null,
+				null,
+				(bool) $this->ID
+			);
+			$password->setCanBeEmpty(true);
+			
+			$fields = FieldList::create(
+				TextField::create('FirstName', $member->fieldLabel('FirstName')),
+				TextField::create('Surname', $member->fieldLabel('Surname')),
+				EmailField::create('Email', $member->fieldLabel('Email')),
+				$password
+			);
+			
+			$actions = FieldList::create($update = FormAction::create('updateprofile', 'Update'));
+			
+			$form = Form::create($this, 'UpdateForm', $fields, $actions);
+			$form->loadDataFrom($member);
+			
+			$this->extend('updateProfileDashletForm', $form);
+			
 			return $form;
 		}
 
