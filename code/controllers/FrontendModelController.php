@@ -8,7 +8,7 @@
  */
 class FrontendModelController extends Page_Controller {
 	
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'view',
 		'index',
 		'all',
@@ -18,15 +18,11 @@ class FrontendModelController extends Page_Controller {
 		'EditForm',
 	);
 
-	public static $url_handlers = array(
+	private static $url_handlers = array(
 		'$Action//$ID/$OtherID'	=> 'handleAction',
 	);
 
 	protected $record;
-	
-	public function init() {
-		parent::init();
-	}
 
 	public function index() {
 		if (!$this->redirectedTo()) {
@@ -47,7 +43,7 @@ class FrontendModelController extends Page_Controller {
 		if ($this->record) {
 			return $this->customise($this->record)->renderWith(array($this->stat('model_class'), 'Page'));
 		}
-		
+
 		throw new Exception("Invalid record");
 	}
 	
