@@ -21,7 +21,7 @@ window.SS = window.SS || {}
 		var dialog  = $("<div class='dialog-loading'></div>");
 		var options = $.extend({}, defaults, opts);
 		
-		if ($('.ui-dialog').length) {
+		if ($('.ui-dialog').length && $('.ui-dialog').is(':visible')) {
 			$(".ui-dialog").dialog("close").dialog("destroy");
 		}
 		dialog.dialog(options);
