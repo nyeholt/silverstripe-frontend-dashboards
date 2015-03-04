@@ -22,8 +22,6 @@
 					   .removeClass("ui-icon-minus");
 			});
 		}
-
-		var dialog = $("<div />").addClass("dashlet-dialog").hide().appendTo("body");
 //
 //		function helper() {
 //			return $("<div />").addClass("dashlet-drag ui-state-highlight").appendTo("body");
@@ -142,38 +140,13 @@
 		$(document).on('click', ".dashlet-action-edit", function() {
 			var dashlet = $(this).parents(".dashlet");
 			var id      = dashlet.data("id");
-
-			dialog.empty().addClass("dashlet-dialog-loading");
-
-			$.get(segment + "/editorfor", { "DashletID": id }, function(html) {
-				dialog.removeClass("dashlet-dialog-loading").html(html);
-
-				//Using jQuery ColorPicker
-				//Commented out for usage of HTML5 <input type='color' />
-				//Uncomment and follow the steps in /code/dashlets/Dashlet.php:getDashletFields()
-				/*dialog.find("form").children('fieldset').children('.dashlet-color').each(function() {
-					$(this).children('div').children('input').colorpicker({
-						autoOpen: false,
-						parts: ['map', 'bar', 'footer'],
-						layout:{
-							map: [0,0,1,1],
-							bar: [1,0,1,1]
-						},
-						part: {
-							map:{size:128},
-							bar:{size:128}
-						},
-						inlineFrame: false
-					});
-				});*/
-			});
-
+			
 			var buttons = {
 				"Save": function() {
 					var self = $(this);
 					self.dialog("disable");
 
-					dialog.find("form").ajaxSubmit({
+					self.find("form").ajaxSubmit({
 						success: function(replace) {
 							dashlet.replaceWith(replace);
 							self.dialog("enable");
@@ -185,14 +158,16 @@
 					$(this).dialog("close")
 				}
 			};
-
-			dialog.dialog({
+			
+			var dialogOpts = {
 				title:   "Edit Dashlet",
 				width:   600,
 				height:  400,
 				modal:   true,
 				buttons: buttons
-			});
+			};
+
+			SS.Dialog.open(segment + "/editorfor", dialogOpts, { "DashletID": id });
 
 			return false;
 		});

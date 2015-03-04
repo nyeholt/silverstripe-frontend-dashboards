@@ -3,7 +3,7 @@ window.SS = window.SS || {}
 
 ;(function($) {
 	
-	var dialog = function(url, opts) {
+	var dialog = function(url, opts, requestParams) {
 		var defaults = {
 			width:     400,
 			height:    400,
@@ -26,14 +26,19 @@ window.SS = window.SS || {}
 		}
 		dialog.dialog(options);
 		
-		$.get(url, function(data) {
+		$.get(url, requestParams, function(data) {
 			var data = $(data);
 
 			dialog.removeClass("dialog-loading");
 
 			if(data.length == 1 && data.is("form")) {
 				dialog.empty().append(data);
-				buttons(dialog);
+				if (typeof options.buttons == 'undefined') {
+					buttons(dialog);
+				} else {
+					// remove any form buttons added, as we've already got some specified
+					dialog.find('form .Actions').remove();
+				}
 			} else {
 				dialog.empty().append(data);
 			}
