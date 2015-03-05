@@ -6,16 +6,16 @@
  */
 class DashboardController extends FrontendModelController {
 	
-	public static $model_class = 'DashboardPage';
+	private static $model_class = 'DashboardPage';
 	
-	static $url_handlers = array(
+	private static $url_handlers = array(
 		'widget/$ID'					=> 'handleDashlet',
 		'dashlet/$ID'					=> 'handleDashlet',	// what it should be
 		'board/$URLSegment/$MemberID'	=> 'handleBoard',
 		'user/$Identifier/$Segment'		=> 'handleUser',
 	);
 
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'index',
 		'board',
 		'handleDashlet',

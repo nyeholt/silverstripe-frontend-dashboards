@@ -9,6 +9,7 @@ class SiteDashboardPage extends Page {
 }
 
 class SiteDashboardPage_Controller extends DashboardController {
+
 	private static $dependencies = array(
 		'dataService'		=> '%$DataService',
 	);
