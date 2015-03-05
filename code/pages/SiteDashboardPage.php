@@ -9,12 +9,7 @@ class SiteDashboardPage extends Page {
 }
 
 class SiteDashboardPage_Controller extends DashboardController {
-
-	public static $allowed_actions = array(
-		
-	);
-
-	public static $dependencies = array(
+	private static $dependencies = array(
 		'dataService'		=> '%$DataService',
 	);
 	
