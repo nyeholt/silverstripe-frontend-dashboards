@@ -32,9 +32,9 @@ class FrontendModelController extends Page_Controller {
 	
 	public function handleAction($request, $action) {
 		$this->record = $this->getRecord();
-		if ($this->request->param('ID') && ((int) $this->request->param('ID')) && !$this->record) {
-			Security::permissionFailure($this, "You do not have permission to that");
-			return;
+		$id = (int) $this->request->param('ID');
+		if ($id && !$this->record) {
+			return Security::permissionFailure($this, "You do not have permission to that");
 		}
 		return parent::handleAction($request, $action);
 	}

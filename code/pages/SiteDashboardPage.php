@@ -26,26 +26,6 @@ class SiteDashboardPage_Controller extends DashboardController {
 		}
 	}
 	
-
-	/**
-	 * Overridden to make sure the dashboard page is attached to the correct controller
-	 * @return type 
-	 */
-	protected function getRecord() {
-		$id = (int) $this->request->param('ID'); 
-		if (!$id) {
-			$id = (int) $this->request->requestVar('ID');
-		}
-		if ($id) {
-			$item = $this->dataService->byId($this->stat('model_class'), $id);
-			if ($item instanceof DashboardPage) {
-				$item->setController($this);
-			}
-
-			return $item;
-		}
-	}
-	
 	public function Link($action = null) {
 		$dashboard = $this->currentDashboard;
 
