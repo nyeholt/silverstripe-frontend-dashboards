@@ -131,3 +131,49 @@ ul {
 nav {
 	z-index:9999;
 }
+
+.mobile-layout {
+	display: none;
+	overflow: auto;
+	padding: 20px;
+}
+
+.mobile-dashlet-icon {
+	display: block;
+	border-radius: 10px;
+	box-shadow: 0px 2px 10px 0px #aaa;
+	width: 80px;
+	height: 80px;
+	margin: 20px;
+	float: left;
+	background-color: #fff;
+	cursor: pointer;
+}
+
+.dashlet-title-icon {
+	display: block;
+	font-size: 20px;
+	font-weight: bold;
+	height: 50%;
+	width: 50%;
+	margin: 25% auto;
+	text-align: center;
+}
+
+@media only screen and (max-width: 640px) {
+ 
+}
+
+@media only screen and (max-width: 768px) {
+	div.gridster {
+		display: none;
+	}
+	
+	.mobile-layout {
+		display: block;
+	}
+	
+	.ui-dialog-content .dashlet {
+		overflow: visible;
+	}
+}

@@ -185,6 +185,15 @@
 			return false;
 		});
 		
+		$(document).on('click', 'span.dashlet-title-icon', function (e) {
+			var loadLink = segment + '/loaddashlet?DashletID=' + $(this).attr('data-id');
+			var dialog = SS.Dialog.open(loadLink, {
+				title:  $(this).attr("title") || $(this).text(),
+				width:  "90%",
+				height: "500"
+			});
+		});
+		
 		$('div.dashlet').entwine({
 			refresh: function () {
 				var id = this.attr('data-id');
