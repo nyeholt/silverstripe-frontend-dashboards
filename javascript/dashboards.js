@@ -186,12 +186,24 @@
 		});
 		
 		$(document).on('click', 'span.dashlet-title-icon', function (e) {
-			var loadLink = segment + '/loaddashlet?DashletID=' + $(this).attr('data-id');
-			var dialog = SS.Dialog.open(loadLink, {
+			var dialog = SS.Dialog.open(null, {
 				title:  $(this).attr("title") || $(this).text(),
 				width:  "90%",
 				height: "500"
 			});
+			dialog.removeClass("dialog-loading");
+			var selector = 'div.dashlet[data-id=' + $(this).attr('data-id') + ']';
+			var dashlet = $(selector);
+			if (dashlet.length) {
+				var originalParent = dashlet.parent();
+				dialog.append(dashlet);
+				dialog.on('dialogclose', function () {
+					var dashlet = $(this).find('div.dashlet');
+					if (originalParent) {
+						originalParent.append(dashlet);
+					}
+				})
+			}
 		});
 		
 		$('div.dashlet').entwine({

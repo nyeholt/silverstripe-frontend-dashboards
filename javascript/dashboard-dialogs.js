@@ -26,24 +26,26 @@ window.SS = window.SS || {}
 		}
 		dialog.dialog(options);
 		
-		$.get(url, requestParams, function(data) {
-			var data = $(data);
+		if (url) {
+			$.get(url, requestParams, function(data) {
+				var data = $(data);
 
-			dialog.removeClass("dialog-loading");
+				dialog.removeClass("dialog-loading");
 
-			if(data.length == 1 && data.is("form")) {
-				dialog.empty().append(data);
-				if (typeof options.buttons == 'undefined') {
-					buttons(dialog);
+				if(data.length == 1 && data.is("form")) {
+					dialog.empty().append(data);
+					if (typeof options.buttons == 'undefined') {
+						buttons(dialog);
+					} else {
+						// remove any form buttons added, as we've already got some specified
+						dialog.find('form .Actions').remove();
+					}
 				} else {
-					// remove any form buttons added, as we've already got some specified
-					dialog.find('form .Actions').remove();
+					dialog.empty().append(data);
 				}
-			} else {
-				dialog.empty().append(data);
-			}
-		});
-		
+			});
+		}
+
 		SS.currentDialog = dialog;
 
 		return dialog;
