@@ -12,7 +12,7 @@
 <div class="mobile-layout">
 	<% if WidgetControllers %>
 	<% loop WidgetControllers %>
-	<div class="mobile-dashlet-icon">
+	<div class="mobile-dashlet-icon {$ClassName}Mobile">
 		<span class="dashlet-title-icon" data-id="$ID" data-link="$Link" data-tooltip title="$Title.ATT" aria-haspopup="true" class="has-tip tip-top">$Title.LimitCharacters(1,'')</span>
 	</div>
 	<% end_loop %>
