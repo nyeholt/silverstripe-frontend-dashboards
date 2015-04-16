@@ -28,8 +28,7 @@ class UserProfileDashlet_Controller extends Dashlet_Controller {
 		}
 		
 		// use member profile page if possible
-		$profilePage = MemberProfilePage::get()->filter($filter)->first();
-		if ($profilePage) {
+		if (class_exists('MemberProfilePage') && $profilePage = MemberProfilePage::get()->filter($filter)->first()) {
 			$controller = MemberProfilePage_Controller::create($profilePage);
 			$form = $controller->ProfileForm();
 			$form->addExtraClass('ajax-form');
