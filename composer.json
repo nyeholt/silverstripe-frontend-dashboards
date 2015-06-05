@@ -10,7 +10,7 @@
 	},
 	"minimum-stability": "dev",
 	"extra": {
-		"installer-name": "extensible-search",
+		"installer-name": "frontend-dashboards",
 		"branch-alias": {
 			"dev-master": "1.3.x-dev"
 		}
