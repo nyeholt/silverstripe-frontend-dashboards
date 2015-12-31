@@ -6,13 +6,15 @@
  *
  * @author marcus@silverstripe.com.au
  */
-class DateFieldExtension extends Extension {
-	public function SimpleFieldHolder() {
-		$d = Object::create('DateField_View_JQuery', $this->owner); 
-		$d->onBeforeRender(); 
-		$class = 'field date '.$this->owner->XML_val('extraClass');
-		$html = '<span class="'.$class.'">'.$this->owner->Field().'</span>';
-		$html = $d->onAfterRender($html); 
-		return $html;
-	}
+class DateFieldExtension extends Extension
+{
+    public function SimpleFieldHolder()
+    {
+        $d = Object::create('DateField_View_JQuery', $this->owner);
+        $d->onBeforeRender();
+        $class = 'field date '.$this->owner->XML_val('extraClass');
+        $html = '<span class="'.$class.'">'.$this->owner->Field().'</span>';
+        $html = $d->onAfterRender($html);
+        return $html;
+    }
 }
