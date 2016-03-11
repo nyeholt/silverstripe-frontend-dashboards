@@ -3,7 +3,7 @@
 	"description": "Allows the creation of user-manageable dashboards in a frontend UI",
 	"type": "silverstripe-module",
 	"require": {
-		"silverstripe/framework": "3.1.*",
+		"silverstripe/framework": "~3.1",
 		"silverstripe/restrictedobjects": "~2.1",
 		"silverstripe/widgets": "~1.2",
 		"silverstripe-australia/frontend-objects": "~1.0"
