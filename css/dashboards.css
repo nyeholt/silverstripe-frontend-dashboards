@@ -160,6 +160,10 @@ nav {
 	text-align: center;
 }
 
+.grid-container {
+	min-height: 50px;
+}
+
 @media only screen and (max-width: 640px) {
  
 }

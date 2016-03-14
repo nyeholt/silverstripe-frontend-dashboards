@@ -22,90 +22,96 @@
 					   .removeClass("ui-icon-minus");
 			});
 		}
-//
-//		function helper() {
-//			return $("<div />").addClass("dashlet-drag ui-state-highlight").appendTo("body");
-//		}
-//
-//		function update(e, ui) {
-//			var dashboard = $(ui.item).parent(".dashboard");
-//			var id        = dashboard.data("id");
-//
-//			var ids = dashboard.find(".dashlet").map(function(i, el) {
-//				return $(el).data("id");
-//			});
-//
-//			$.post(segment + "/updateDashboard", { dashboard: id, 'order[]': ids.get() })
-//		}
-//
-//		$(".dashboard").each(function() {
-//			$(this).sortable({
-//				placeholder: "ui-state-highlight dashlet-placeholder",
-//				handle:      ".dashlet-title",
-//				connectWith: ".dashboard",
-//				tolerance:   "pointer",
-//				revert:      true,
-//				helper:      helper,
-//				update:      update
-//			});
-//		});
+		
+		var dynamic = $('.DashboardLayout.dynamic').length > 0;
+		if (dynamic) {
+			var gridster = $(".gridster ul.grid-container").gridster({
+				widget_margins: [10, 10],
+				widget_base_dimensions: [120, 120],
+				avoid_overlapped_widgets: true,
+				resize: {
+					enabled: true,
+					handle_class: 'dashlet-resize', //Setting the class of the resize handle
+					stop: function(e, i, widget) {
+						/*
+						*	This function creates post requests for the resized object
+						*	and also every object that had its position changed.
+						*	The resized object, isn't classified as a changed object
+						*	hence why there are two separate posts, as we cannot loop
+						*	over just the $changed objects.
+						*/
+						$.post($(widget[0].firstElementChild).attr('data-link') + '/save', this.serialize($(widget))[0])
+						.done(function(data) {});
 
-		var gridster = $(".gridster ul.grid-container").gridster({
-			widget_margins: [10, 10],
-			widget_base_dimensions: [120, 120],
-			avoid_overlapped_widgets: true,
-			resize: {
-				enabled: true,
-				handle_class: 'dashlet-resize', //Setting the class of the resize handle
-				stop: function(e, i, widget) {
-					/*
-					*	This function creates post requests for the resized object
-					*	and also every object that had its position changed.
-					*	The resized object, isn't classified as a changed object
-					*	hence why there are two separate posts, as we cannot loop
-					*	over just the $changed objects.
-					*/
-					$.post($(widget[0].firstElementChild).attr('data-link') + '/save', this.serialize($(widget))[0])
-					.done(function(data) {});
-
-					if(this.$changed.length > 0) {
-						for(var i = 0; i < $(this.$changed).length; i++) {
-							$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
-							.done(function() {});
+						if(this.$changed.length > 0) {
+							for(var i = 0; i < $(this.$changed).length; i++) {
+								$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
+								.done(function() {});
+							}
 						}
-					}
 
-					/*
-					*	Using this as to clear out what objects are in a "changed" state
-					*	as we already have it saved to the database.
-					*	This is because the changed states persists across every
-					*	change regardless of if the object was actually changed
-					*	in that specific call.
-					*	Otherwise we'd be writing to the database when we didn't
-					*	need to because nothing had changed :)
-					*/
-					this.$changed = $([]);
-				}
-			},
-			draggable: {
-				handle: '.dashlet-title h3',
-				stop: function(e, i) {
-					/*
-					*	If objects have changed position, cycle through all changed objects
-					*	and create post requests to update positions in the database.
-					*/
-					if(this.$changed.length > 0) {
-						for(var i = 0; i < $(this.$changed).length; i++) {
-							$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
-							.done(function() {});
+						/*
+						*	Using this as to clear out what objects are in a "changed" state
+						*	as we already have it saved to the database.
+						*	This is because the changed states persists across every
+						*	change regardless of if the object was actually changed
+						*	in that specific call.
+						*	Otherwise we'd be writing to the database when we didn't
+						*	need to because nothing had changed :)
+						*/
+						this.$changed = $([]);
+					}
+				},
+				draggable: {
+					handle: '.dashlet-title h3',
+					stop: function(e, i) {
+						/*
+						*	If objects have changed position, cycle through all changed objects
+						*	and create post requests to update positions in the database.
+						*/
+						if(this.$changed.length > 0) {
+							for(var i = 0; i < $(this.$changed).length; i++) {
+								$.post($(this.$changed[i].firstElementChild).attr('data-link') + '/save', this.serialize($(this.$changed))[i])
+								.done(function() {});
+							}
 						}
-					}
 
-					//See above in resize.stop to see why we do this.
-					this.$changed = $([]);
+						//See above in resize.stop to see why we do this.
+						this.$changed = $([]);
+					}
 				}
+			}).data('gridster');
+		} else {
+			function helper() {
+				return $("<div />").addClass("dashlet-drag ui-state-highlight").appendTo("body");
 			}
-		}).data('gridster');
+
+			function update(e, ui) {
+				var dashboard = $(ui.item).parent(".grid-container");
+				var id        = dashboard.data("id");
+
+				var ids = dashboard.find(".dashlet").map(function(i, el) {
+					return $(el).data("id");
+				});
+
+				$.post(segment + "/updateDashboard", { dashboard: id, 'order[]': ids.get() })
+			}
+
+			$(".grid-container").each(function() {
+				$(this).sortable({
+					placeholder: "ui-state-highlight dashlet-placeholder",
+					handle:      ".dashlet-title",
+					connectWith: ".grid-container",
+					tolerance:   "pointer",
+					revert:      true,
+					helper:      helper,
+					update:      update
+				});
+			});
+		}
+
+
+		
 		
 		// prevent selection of content
 		$(document).on('mousedown', '.dashlet-title h3', function (e) { e.preventDefault(); });

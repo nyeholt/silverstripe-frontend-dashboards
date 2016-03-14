@@ -1,5 +1,6 @@
-<div class="gridster" style="position: relative;">
-	<ul class="grid-container">
+
+<div class="<% if $parent.DashboardLayout == 'dynamic' %>gridster<% end_if %>" style="position: relative;">
+	<ul class="grid-container" data-id="$ID">
 		<% if WidgetControllers %>
 		<% loop WidgetControllers %>
 		<li data-row="$PosY" data-col="$PosX" data-sizex="$Width" data-sizey="$Height">
@@ -9,6 +10,8 @@
 		<% end_if %>
 	</ul>
 </div>
+
+<% if $parent.DashboardLayout == 'dynamic' %>
 <div class="mobile-layout">
 	<% if WidgetControllers %>
 	<% loop WidgetControllers %>
@@ -18,3 +21,4 @@
 	<% end_loop %>
 	<% end_if %>
 </div>
+<% end_if %>

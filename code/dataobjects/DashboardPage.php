@@ -15,12 +15,11 @@
 class DashboardPage extends DataObject
 {
 
-    public static $layouts = array(
+    private static $layouts = array(
         'dynamic'    => 'Dynamic',
-//		'1col'   => 'One Column',
-//		'2colLW' => 'Two Columns - Left Wide',
-//		'2colRW' => 'Two Columns - Right Wide',
-//		'3col'   => 'Three Columns'
+		'2colLW' => 'Two Columns - Left Wide',
+		'2colRW' => 'Two Columns - Right Wide',
+		'3col'   => 'Three Columns'
     );
 
     private static $default_layout = 'dynamic';
@@ -122,7 +121,7 @@ class DashboardPage extends DataObject
     {
         $fields = parent::getFrontEndFields($params);
         
-        $fields->replaceField('Layout', $dd = DropdownField::create('Layout', null, self::$layouts));
+        $fields->replaceField('Layout', $dd = DropdownField::create('Layout', null, $this->config()->layouts));
         $dd->setHasEmptyDefault(true);
 
 
@@ -141,6 +140,10 @@ class DashboardPage extends DataObject
             $layout = $this->config()->default_layout;
         }
         return $this->renderWith("DashboardPage_$layout");
+    }
+    
+    public function DashboardLayout() {
+        return $this->Layout ? $this->Layout : $this->config()->default_layout;
     }
 
     public function Link($action='')
