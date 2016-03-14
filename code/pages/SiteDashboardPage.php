@@ -19,8 +19,6 @@ class SiteDashboardPage_Controller extends DashboardController
     {
         parent::init();
         
-        Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-        Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js'); // -1.8.5.custom.min.js');
         Requirements::css('frontend-dashboards/thirdparty/aristo/aristo.css');
         
         if (class_exists('WebServiceController')) {
