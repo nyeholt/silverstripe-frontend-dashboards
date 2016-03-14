@@ -23,25 +23,29 @@ class DashboardPage extends DataObject
 //		'3col'   => 'Three Columns'
     );
 
-    public static $default_layout = 'dynamic';
+    private static $default_layout = 'dynamic';
 
     public static $max_dashboards = 3;
-    public static $db = array(
-        'Title'            => 'Varchar(128)',
-        'URLSegment'    => 'Varchar(64)',
-        'Layout'        => 'Varchar(15)',
+    private static $db = array(
+        'Title'             => 'Varchar(128)',
+        'URLSegment'        => 'Varchar(64)',
+        'Layout'            => 'Varchar(15)',
     );
     
-    public static $defaults = array(
+    private static $defaults = array(
         'ColumnLayout'            => 'dynamic'
     );
 
-    public static $has_many = array(
+    private static $has_many = array(
         'Dashboards'            => 'MemberDashboard',
     );
 
-    public static $extensions = array(
+    private static $extensions = array(
         'Restrictable',
+    );
+    
+    private static $summary_fields = array(
+        'Title', 'Owner.Email',
     );
 
     private $controller;
@@ -67,7 +71,9 @@ class DashboardPage extends DataObject
     public function getDashboard($index)
     {
         $dashboards = $this->Dashboards();
-
+        if (!$dashboards->count()) {
+            $dashboards = $this->createDefaultBoards();
+        }
         $board = $dashboards->offsetGet($index);
         $board->parent = $this;
 
@@ -95,14 +101,21 @@ class DashboardPage extends DataObject
         parent::onAfterWrite();
         $dashboards = $this->Dashboards();
         if (!$dashboards->Count()) {
-            $i = 0;
-            while ($i < self::$max_dashboards) {
-                $area = new MemberDashboard;
-                $area->DashboardID = $this->ID;
-                $area->write();
-                $i++;
-            }
+            $this->createDefaultBoards();
         }
+    }
+    
+    protected function createDefaultBoards() {
+        $i = 0;
+        $boards = ArrayList::create();
+        while ($i < self::$max_dashboards) {
+            $area = MemberDashboard::create();
+            $area->DashboardID = $this->ID;
+            $area->write();
+            $boards->push($area);
+            $i++;
+        }
+        return $boards;
     }
     
     public function getFrontEndFields($params = null)
@@ -125,9 +138,8 @@ class DashboardPage extends DataObject
         if ($this->Layout) {
             $layout = $this->Layout;
         } else {
-            $layout = self::$default_layout;
+            $layout = $this->config()->default_layout;
         }
-
         return $this->renderWith("DashboardPage_$layout");
     }
 
