@@ -6,6 +6,23 @@
  */
 class SiteDashboardPage extends Page
 {
+    private static $has_one = array(
+        'FixedDashboard'        => 'DashboardPage',
+    );
+    
+    public function getCMSFields() {
+        $fields = parent::getCMSFields();
+        
+        $allboards = DashboardPage::get()->restrict();
+        $boards = array();
+        foreach ($allboards as $board) {
+            $boards[$board->ID] = $board->Title . ' ' . $board->Owner()->Title;
+        }
+        
+        $fields->addFieldToTab('Root.Main', DropdownField::create('FixedDashboardID', 'Specific dashboard to show', $boards)->setEmptyString('-- none --'), 'Content');
+        $fields->removeByName('Content');
+        return $fields;
+    }
 }
 
 class SiteDashboardPage_Controller extends DashboardController
@@ -17,6 +34,10 @@ class SiteDashboardPage_Controller extends DashboardController
     
     public function init()
     {
+        $board = $this->data()->FixedDashboard();
+        if ($board->ID && $board->canView()) {
+            $this->currentDashboard = $board;
+        }
         parent::init();
         
         Requirements::css('frontend-dashboards/thirdparty/aristo/aristo.css');
