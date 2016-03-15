@@ -10,12 +10,16 @@ class MemberDashboard extends WidgetArea
     public $template = __CLASS__;
     public $parent;
 
-    public static $has_one = array(
+    private static $has_one = array(
         'Dashboard'                => 'DashboardPage',
     );
 
-    public static $extensions = array(
+    private static $extensions = array(
         'Restrictable'
+    );
+    
+    private static $summary_fields = array(
+        'ID', 'ClassName'
     );
     
     public function addDashlet(Dashlet $dashlet)
