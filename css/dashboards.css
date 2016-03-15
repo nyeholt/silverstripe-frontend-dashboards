@@ -2,9 +2,12 @@
 	min-height: 200px;
 }
 
-ul {
+ul.grid-container {
     list-style-type: none;
+	padding: 0px;
 }
+
+
 
 .dashlet {
 	margin-bottom: 10px;
