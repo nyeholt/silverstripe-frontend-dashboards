@@ -24,17 +24,49 @@ class Dashlet extends Widget
         'PosY'            => 1,
     );
 
+    private $publishAfterWrite = false;
+    
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
         if (!$this->Title) {
             $this->Title = Config::inst()->get($this->class, 'title');
         }
+        
+        if (Widget::has_extension('Versioned') && Versioned::current_stage() == 'Stage') {
+            $this->publishAfterWrite = true;
+        }
+    }
+    
+    public function onAfterWrite() {
+        parent::onAfterWrite();
+        
+        if ($this->publishAfterWrite) {
+            $this->publishAfterWrite = false;
+            $this->publish('Stage', 'Live');
+        }
     }
 
     public function Title()
     {
         return $this->dbObject('Title');
+    }
+
+    public function getCMSFields() 
+    {
+        if (!$this->ID) {
+            $types = ClassInfo::subclassesFor('Dashlet');
+            unset($types['Dashlet']);
+            $fields = FieldList::create(array(
+                TextField::create('Title', $this->fieldLabel('Title')),
+                DropdownField::create('ClassName', $this->fieldLabel('DashletType'), $types)
+            ));
+        } else {
+            $fields = parent::getCMSFields();
+        }
+
+        $this->extend('updateDashletCMSFields', $fields);
+        return $fields;
     }
 
     /**

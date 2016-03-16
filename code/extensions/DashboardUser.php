@@ -67,30 +67,21 @@ class DashboardUser extends DataExtension
         $dashboard->write();
         
         if ($createDefault) {
-            $defaults = Config::inst()->get('DashboardUser', 'default_dashlets');
-            /* @deprecated Please use the default_layout */
-            if (count($defaults)) {
-                foreach ($defaults as $dbid => $dashlets) {
-                    foreach ($dashlets as $type) {
-                        if (class_exists($type)) {
-                            $dashlet = new $type;
-                            $db = $dashboard->getDashboard($dbid);
-                            if ($db && $dashlet->canCreate()) {
-                                $dashlet->ParentID = $db->ID;
-                                $dashlet->write();
-                            }
-                        }
-                    }
-                }
-            }
+            $currentStage = null;
             
+            if (Widget::has_extension('Versioned')) {
+                $currentStage = Versioned::current_stage();
+                Versioned::reading_stage('Stage');
+            }
             $layout = Config::inst()->get('DashboardUser', 'default_layout');
             if (count($layout)) {
                 foreach ($layout as $type => $properties) {
                     if (class_exists($type)) {
-                        $dashlet = new $type;
+                        $dashlet = $type::create();
                         /* @var $dashlet Dashlet */
-                        $db = $dashboard->getDashboard(0);
+                        $dashletColumn = isset($properties['DashletColumn']) ? $properties['DashletColumn'] : 0;
+
+                        $db = $dashboard->getDashboard($dashletColumn);
                         if ($db && $dashlet->canCreate()) {
                             $dashlet->ParentID = $db->ID;
                             if (is_array($properties)) {
@@ -102,7 +93,12 @@ class DashboardUser extends DataExtension
                 }
             }
 
+            if ($currentStage) {
+                Versioned::reading_stage($currentStage);
+            }
+            
             $dashboard = $this->getNamedDashboard($url);
+            
             
             $this->owner->extend('updateCreatedDashboard', $dashboard);
         }

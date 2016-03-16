@@ -384,12 +384,16 @@ class DashboardController extends FrontendModelController
         $type    = $data['DashletClass'];
 
         if (isset($classes[$type])) {
+            $stage = Versioned::current_stage();
+            Versioned::reading_stage('Stage');
             $dashlet = $this->injector->create($type);
             if (!$dashlet->canCreate()) {
                 throw new PermissionDeniedException('CreateChildren');
             }
             $dashboard = $this->currentDashboard->getDashboard(0);
             $dashboard->addDashlet($dashlet);
+            
+            Versioned::reading_stage($stage);
         }
         
         //return $this->redirect($this->currentDashboard->Link());

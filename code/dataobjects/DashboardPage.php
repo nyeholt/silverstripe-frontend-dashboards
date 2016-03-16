@@ -104,6 +104,18 @@ class DashboardPage extends DataObject
         }
     }
     
+    public function onBeforeDelete() 
+    {
+        parent::onBeforeDelete();
+        
+        $dashboards = $this->Dashboards();
+        if ($dashboards->count()) {
+            foreach ($dashboards as $board) {
+                $board->delete();
+            }
+        }
+    }
+    
     protected function createDefaultBoards() {
         $i = 0;
         $boards = ArrayList::create();

@@ -68,4 +68,27 @@ class MemberDashboard extends WidgetArea
     {
         return $this->Dashboard();
     }
+    
+    public function getCMSFields() 
+    {
+        $fields = parent::getCMSFields();
+        $grid = $fields->dataFieldByName('Widgets');
+        $grid->setModelClass('Dashlet');
+        
+        return $fields;
+    }
+    
+    public function onBeforeDelete()
+    {
+        if (Widget::has_extension('Versioned')) {
+            $currentStage = Versioned::current_stage();
+            Versioned::reading_stage('Stage');
+            parent::onBeforeDelete();
+            Versioned::reading_stage('Live');
+            parent::onBeforeDelete();
+            Versioned::reading_stage($currentStage);
+        } else {
+            parent::onBeforeDelete();
+        }
+    }
 }
