@@ -7,6 +7,7 @@
 class UserProfileDashlet extends Dashlet
 {
     public static $title = 'User profile';
+	public static $cmsTitle = 'User Profile';
     
     public function canCreate($member = null)
     {
