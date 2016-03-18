@@ -3,6 +3,7 @@
 class NoteDashlet extends Dashlet
 {
     public static $title    = 'Note';
+	public static $cmsTitle = 'Note';
     public static $description = "A dashlet that can hold notes which use markdown syntax";
     
     public static $db        = array(
