@@ -2,7 +2,10 @@
 window.SS = window.SS || {}
 
 ;(function($) {
-	var dialog = function(url, opts) {
+	var dialog = function(url, opts, params) {
+		if (!params) {
+			params = {};
+		}
 		var defaults = {
 			width:     400,
 			height:    400,
@@ -19,7 +22,7 @@ window.SS = window.SS || {}
 		}
 		dialog.dialog(options);
 		
-		$.get(url, function(data) {
+		$.get(url, params, function(data) {
 			var data = $(data);
 
 			dialog.removeClass("dialog-loading");
@@ -58,7 +61,7 @@ window.SS = window.SS || {}
 		Dialog: { open: dialog, buttons: buttons }
 	});
 	
-	$("[data-dialog]").live("click", function() {
+	$(document).on('click', "[data-dialog]", function(e) {
 		var link = $(this);
 
 		var dialog = SS.Dialog.open(link.attr("href"), {
@@ -75,7 +78,7 @@ window.SS = window.SS || {}
 		return false;
 	})
 	
-	$(".ui-dialog form").live("submit", function() {
+	$(document).on('submit', ".ui-dialog form", function() {
 		var form   = $(this);
 		var dialog = form.parents(".ui-dialog-content");
 		
