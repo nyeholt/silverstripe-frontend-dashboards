@@ -74,7 +74,9 @@ class DashboardPage extends DataObject
             $dashboards = $this->createDefaultBoards();
         }
         $board = $dashboards->offsetGet($index);
-        $board->parent = $this;
+        if ($board) {
+            $board->parent = $this;
+        }
 
         return $board;
     }

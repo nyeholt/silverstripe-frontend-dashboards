@@ -73,7 +73,9 @@ class MemberDashboard extends WidgetArea
     {
         $fields = parent::getCMSFields();
         $grid = $fields->dataFieldByName('Widgets');
-        $grid->setModelClass('Dashlet');
+        if ($grid) {
+            $grid->setModelClass('Dashlet');
+        }
         
         return $fields;
     }
