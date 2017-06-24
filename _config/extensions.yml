@@ -1,0 +1,9 @@
+Member:
+  extensions:
+    - DashboardUser
+Dashlet:
+  extensions:
+    - Restrictable
+DateField:
+  extensions:
+    - DateFieldExtension
