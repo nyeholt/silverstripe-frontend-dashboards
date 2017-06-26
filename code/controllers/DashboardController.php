@@ -441,7 +441,7 @@ class DashboardController extends FrontendModelController
             $form->saveInto($dashlet);
             $dashlet->write();
 
-            return $this->loaddashlet();
+            return $this->editorfor();
         }
     }
 

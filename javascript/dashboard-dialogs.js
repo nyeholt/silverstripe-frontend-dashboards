@@ -1,48 +1,61 @@
 
 window.SS = window.SS || {}
+window.DashboardHelper = window.DashboardHelper || {};
 
 ;(function($) {
+    
+    
 	
+    DashboardHelper.showDialog = function (name) {
+        var popup;
+        var dialog = $('#dashboard-dialog');
+        if (!dialog.length) {
+            dialog = $('<div class="dashboard-overlay" id="dashboard-dialog">');
+            popup = $('<div class="dashboard-popup">').appendTo(dialog);
+            popup.append('<a class="dashboard-dialog-close" href="#">&times;</a>');
+            popup.append('<div class="dashboard-dialog-content">');
+            $('body').append(dialog);
+        }
+
+        dialog.attr('data-name', name);
+        // we want to actually return the content bit
+        popup = dialog.find('.dashboard-dialog-content');
+        $(dialog).addClass('active-dialog');
+        return popup;
+    }
+
+    DashboardHelper.closeDialog = function () {
+        var dialog = $('#dashboard-dialog');
+        if (dialog.length) {
+            dialog.removeClass('active-dialog');
+            dialog.find('dashboard-dialog-content').html('');
+            dialog.remove();
+        }
+    }
+    
+    $(document).on('click', '.dashboard-dialog-close', function (e) {
+        e.preventDefault();
+        DashboardHelper.closeDialog();
+        return false;
+    });
+    
+    window.SS.BasicDialog = function () {
+        
+    };
+    
 	var dialog = function(url, opts, requestParams) {
 		var defaults = {
 			width:     400,
 			height:    400,
 			modal:     true,
-			draggable: false,
-			resizable: false,
-			close: function (e) {
-				if (SS.currentDialog) {
-					SS.currentDialog.remove();
-					delete SS.currentDialog;
-				}
-			}
 		};
 
-		var dialog  = $("<div class='dialog-loading'></div>");
-		var options = $.extend({}, defaults, opts);
-		
-		if ($('.ui-dialog').length && $('.ui-dialog').is(':visible')) {
-			$(".ui-dialog").dialog("close").dialog("destroy");
-		}
-		dialog.dialog(options);
+		var dialog = DashboardHelper.showDialog();
+        dialog.addClass('dialog-loading');
 		
 		if (url) {
 			$.get(url, requestParams, function(data) {
-				var data = $(data);
-
-				dialog.removeClass("dialog-loading");
-
-				if(data.length == 1 && data.is("form")) {
-					dialog.empty().append(data);
-					if (typeof options.buttons == 'undefined') {
-						buttons(dialog);
-					} else {
-						// remove any form buttons added, as we've already got some specified
-						dialog.find('form .Actions').remove();
-					}
-				} else {
-					dialog.empty().append(data);
-				}
+				showInDialog(data);
 			});
 		}
 
@@ -50,6 +63,30 @@ window.SS = window.SS || {}
 
 		return dialog;
 	};
+    
+    function showInDialog(content) {
+        if (!content.length) {
+            return;
+        }
+        var data = $(content);
+        
+        var dialog = DashboardHelper.showDialog();
+
+        dialog.removeClass("dialog-loading");
+
+        if(data.length == 1 && data.is("form")) {
+            dialog.empty().append(data);
+                // remove any form buttons added, as we've already got some specified
+//                    dialog.find('form .Actions').remove();
+        } else {
+            dialog.empty().append(data);
+        }
+
+        // if there's any form included, ajaxify it
+        dialog.find('form').ajaxForm(function (response) {
+            showInDialog(response);
+        });
+    }
 
 	function buttons(dialog) {
 		var form    = dialog.find("form");
@@ -67,7 +104,7 @@ window.SS = window.SS || {}
 			}
 		});
 
-		dialog.dialog("option", "buttons", buttons);
+//		dialog.dialog("option", "buttons", buttons);
 	}
 
 	$.extend(true, window.SS, {
@@ -94,26 +131,17 @@ window.SS = window.SS || {}
 	$('#editDashlets').click(function () {
 		$('div.dashlet-title').toggle();
 		return false;
-	})
+	});
 	
-	$(document).on('submit', ".ui-dialog form", function() {
+	$(document).on('submit', "#dashboard-dialog form", function() {
 		var form   = $(this);
-		var dialog = form.parents(".ui-dialog-content");
+		var dialog = form.parents("#dashboard-dialog");
 		
-		form.find("input[type=submit]")
-		    .attr("disabled", "disabled")
+		form.find("input[type=submit],button")
+		    .prop("disabled", true)
 		    .first()
 		    .val("Loading...");
-
-		dialog.parent()
-		      .find(".ui-button")
-		      .button("disable")
-		      .first()
-		      .find(".ui-button-text")
-		      .text("Loading...");
 	});
 	
-	$(window).resize(function() {
-		$(".ui-dialog-content").dialog("option", "position", "center");
-	});
+	
 })(jQuery);
