@@ -193,7 +193,9 @@ nav {
   padding: 20px;
   background: #fff;
   border-radius: 5px;
-  width: 30%;
+  width: 60%;
+  max-height: 70%;
+  overflow: auto;
   position: relative;
   transition: all 5s ease-in-out;
 }
@@ -216,7 +218,7 @@ nav {
   color: #06D85F;
 }
 .dashboard-popup .dashboard-dialog-content {
-  max-height: 30%;
+  
   overflow: auto;
 }
 .dashboard-popup label {
@@ -239,4 +241,8 @@ nav {
 	.ui-dialog-content .dashlet {
 		overflow: visible;
 	}
+    
+    .dashboard-popup {
+        width: 90%;
+      }
 }
