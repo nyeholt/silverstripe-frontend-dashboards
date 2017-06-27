@@ -19,14 +19,17 @@ ul.grid-container {
 	filter: none;
 	
 	
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;*/
+*/	
+    border: 1px solid #ccc;
+    
+    border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	height:inherit;
 	
 	background-color: #fcfcfc;
 	
-	box-shadow: 0px 0px 10px #111;
+/*	box-shadow: 0px 0px 10px #111;*/
 	overflow:auto;
 }
 
