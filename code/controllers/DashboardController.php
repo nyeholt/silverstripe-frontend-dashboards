@@ -400,6 +400,11 @@ class DashboardController extends FrontendModelController
             
             Versioned::reading_stage($stage);
         }
+
+        if ($this->getRequest()->isAjax()) {
+            $this->response->addHeader('Content-Type', 'application/json');
+            return '{"success": 1}';
+        }
         
         //return $this->redirect($this->currentDashboard->Link());
         return $this->redirectBack();
@@ -445,7 +450,7 @@ class DashboardController extends FrontendModelController
         }
     }
 
-    public function deletedashlet($data, Form $form)
+    public function deletedashlet($data, $form = null)
     {
         $dashlet = $this->getRequestedDashlet();
 

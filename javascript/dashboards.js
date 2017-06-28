@@ -211,6 +211,16 @@
 				})
 			}
 		});
+        
+        $(document).on('click', 'a.as-dialog', function (e) {
+            e.preventDefault();
+            
+			var dialog = SS.Dialog.open($(this).attr('href'), {
+				title:  $(this).attr("title") || $(this).text(),
+				width:  "90%",
+				height: "500"
+			});
+		});
 		
 		$('div.dashlet').entwine({
 			refresh: function () {

@@ -3,8 +3,6 @@ window.SS = window.SS || {}
 window.DashboardHelper = window.DashboardHelper || {};
 
 ;(function($) {
-    
-    
 	
     DashboardHelper.showDialog = function (name) {
         var popup;
@@ -84,6 +82,10 @@ window.DashboardHelper = window.DashboardHelper || {};
 
         // if there's any form included, ajaxify it
         dialog.find('form').ajaxForm(function (response) {
+            if (response && response.success) {
+                location.href = location.href;
+                return;
+            } 
             showInDialog(response);
         });
     }
