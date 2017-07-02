@@ -4,7 +4,7 @@
 	"type": "silverstripe-module",
 	"require": {
 		"silverstripe/framework": "~3.1",
-		"silverstripe/restrictedobjects": "~2.1",
+		"symbiote/silverstripe-restrictedobjects": "~3.0",
 		"silverstripe/widgets": "~1.2",
 		"symbiote/silverstripe-frontend-objects": "~3.0"
 	},
