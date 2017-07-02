@@ -1,18 +1,18 @@
 {
-	"name": "silverstripe/frontend-dashboards",
+	"name": "symbiote/silverstripe-frontend-dashboards",
 	"description": "Allows the creation of user-manageable dashboards in a frontend UI",
 	"type": "silverstripe-module",
 	"require": {
 		"silverstripe/framework": "~3.1",
 		"silverstripe/restrictedobjects": "~2.1",
 		"silverstripe/widgets": "~1.2",
-		"silverstripe-australia/frontend-objects": "~1.0"
+		"symbiote/silverstripe-frontend-objects": "~1.0"
 	},
 	"minimum-stability": "dev",
 	"extra": {
 		"installer-name": "frontend-dashboards",
 		"branch-alias": {
-			"dev-master": "1.8.x-dev"
+			"dev-master": "1.9.x-dev"
 		}
 	}
 }
