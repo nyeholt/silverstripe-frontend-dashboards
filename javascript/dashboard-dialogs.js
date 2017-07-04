@@ -31,6 +31,12 @@ window.DashboardHelper = window.DashboardHelper || {};
         }
     }
     
+    $(document).on('keypress', function (e) {
+        if (e.which === 0) {
+            DashboardHelper.closeDialog();
+        }
+    });
+    
     $(document).on('click', '.dashboard-dialog-close', function (e) {
         e.preventDefault();
         DashboardHelper.closeDialog();
