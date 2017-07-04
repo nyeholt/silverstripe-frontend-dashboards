@@ -41,6 +41,10 @@ ul.grid-container {
 	
 }
 
+.dashlet-content {
+    padding: 0px 10px;
+}
+
 .dashlet-collapsed .dashlet-title {
 	border-bottom: none;
 }
