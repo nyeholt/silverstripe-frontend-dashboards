@@ -19,6 +19,10 @@ class SearchDashlet_Controller extends Dashlet_Controller {
 		'results'
 	);
 
+    private static $search_types = [
+        'SiteTree',
+    ];
+
     public $stopwords = array(
 		'street' => 1, 'st' => 1, 'lane' => 1, 'ln' => 1, 'road' => 1, 'rd' => 1,
 		"a" => 1, "above" => 1, "above" => 1, "across" => 1,
@@ -71,16 +75,22 @@ class SearchDashlet_Controller extends Dashlet_Controller {
         }
 
         $keywords = $this->buildKeywords($data['Terms']);
-        
+
         if ($form instanceof SearchForm) {
             $query = $form->getSearchQuery();
             $results = $form->getResults(5);
         } else {
-
-            $results = SiteTree::get()->filterAny([
-                'Title:PartialMatch' => $keywords['all'],
-                'Content:PartialMatch' => $keywords['all']
-            ])->sort('LastEdited DESC')->limit(200);
+            if (count($keywords['all']) > 0) {
+                $types = self::config()->search_types;
+                $results = ArrayList::create();
+                foreach ($types as $type) {
+                    $typeResults = $type::get()->filterAny([
+                        'Title:PartialMatch' => $keywords['all'],
+                        'Content:PartialMatch' => $keywords['all']
+                    ])->sort('LastEdited DESC')->limit(100);
+                    $results->merge($typeResults);
+                }
+            }
         }
 
         $collection = ArrayList::create();
@@ -90,7 +100,7 @@ class SearchDashlet_Controller extends Dashlet_Controller {
             $collection->push($item);
 		}
 
-        $collection = $collection->sort('SearchScore DESC');
+        $collection = $collection->sort('SearchScore DESC')->limit(40);
 
 		// We require an associative array at the top level, so we'll create this and insert our search results.
 
