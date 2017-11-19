@@ -192,6 +192,10 @@ class Dashlet_Controller extends WidgetController
     */
     public function save()
     {
+        if ($this->widget && $this->widget->OwnerID && $this->widget->OwnerID != Member::currentUserID()) {
+            // check ownership, not just write access
+            return;
+        }
         //Note : Gridster uses weird names... size_x? Why just not width, Argh...
         //			Admittedly, col and row makes sense since it's essentially
         //			using cells to align up objects.
@@ -200,6 +204,9 @@ class Dashlet_Controller extends WidgetController
         $obj->PosY = $this->request->postVar('row');
         $obj->Width = $this->request->postVar('size_x');
         $obj->Height = $this->request->postVar('size_y');
+
+        // only allow the owner access to write. 
+
         $obj->write();
     }
 
