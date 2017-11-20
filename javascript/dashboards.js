@@ -84,7 +84,7 @@
                 min_cols: 1,
                 max_cols: 12,
                 autogenerate_stylesheet: true,
-				widget_margins: [10, 10],
+				widget_margins: [5, 5],
 				widget_base_dimensions: ["auto", 120],
 				avoid_overlapped_widgets: true,
 				resize: resizeOpts,
