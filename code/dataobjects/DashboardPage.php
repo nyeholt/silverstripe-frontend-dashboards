@@ -29,6 +29,7 @@ class DashboardPage extends DataObject
         'Title'             => 'Varchar(128)',
         'URLSegment'        => 'Varchar(64)',
         'Layout'            => 'Varchar(15)',
+        'IsLocked'          => 'Boolean',
     );
     
     private static $defaults = array(

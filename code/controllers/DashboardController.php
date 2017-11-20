@@ -116,8 +116,8 @@ class DashboardController extends FrontendModelController
             Requirements::javascript('frontend-dashboards/javascript/dashboard-dialogs.js');
             Requirements::css('frontend-dashboards/css/dashboards.css');
 
-            Requirements::javascript('frontend-dashboards/javascript/jquery.gridster.js');
-            Requirements::css('frontend-dashboards/css/jquery.gridster.css');
+            Requirements::javascript('frontend-dashboards/javascript/jquery.gridster.min.js');
+            Requirements::css('frontend-dashboards/css/jquery.gridster.min.css');
         }
         
 //		Requirements::javascript('frontend-dashboards/javascript/jquery.gridly.js');

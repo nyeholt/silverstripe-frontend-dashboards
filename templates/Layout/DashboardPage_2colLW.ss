@@ -1,5 +1,5 @@
 
-<div class="DashboardLayout $DashboardLayout">
+<div class="DashboardLayout $DashboardLayout" data-islocked="$IsLocked">
 	<div class="col-md-8 dashboardContainer">
 		$getDashboard(0)
 	</div>

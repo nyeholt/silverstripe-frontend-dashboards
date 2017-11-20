@@ -218,6 +218,11 @@ nav {
   text-decoration: none;
   color: #333;
 }
+
+.gridster li.preview-holder {
+    background-color: #ceffce !important;
+}
+
 .dashboard-popup .dashboard-dialog-close:hover {
   color: #06D85F;
 }
@@ -229,24 +234,13 @@ nav {
     display: block;
 }
 
-@media only screen and (max-width: 640px) {
- 
-}
-
 @media only screen and (max-width: 768px) {
-	div.gridster {
-		display: none;
-	}
-	
-	.mobile-layout {
-		display: block;
-	}
-	
-	.ui-dialog-content .dashlet {
-		overflow: visible;
-	}
+    .gridster li.gs-w {
+        position: static !important;
+        margin-bottom: 5px !important;
+    }
     
-    .dashboard-popup {
-        width: 90%;
-      }
+    .gridster [data-sizex] {
+        width: auto;
+    }
 }
